@@ -11,6 +11,16 @@ app.use(express.json());
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey";
 
+
+
+// ✅ ADD THIS PART — FIXES YOUR CORS ERROR
+app.use(cors({
+    origin: "http://localhost:4000",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true
+  }));
+
+  app.options("*", cors());
 // --------------------
 // CONNECT MONGODB ATLAS
 // --------------------
