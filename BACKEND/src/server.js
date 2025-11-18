@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
+const cors = require("cors");
 
 dotenv.config();
 const app = express();
@@ -20,7 +21,6 @@ app.use(cors({
     credentials: true
   }));
 
-  app.options("*", cors());
 // --------------------
 // CONNECT MONGODB ATLAS
 // --------------------
