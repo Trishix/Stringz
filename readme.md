@@ -10,6 +10,8 @@ Stringz is a full-stack guitar learning platform built using React (Vite) on the
 - TailwindCSS
 - Lucide Icons
 
+link: https://stringz-lijo.vercel.app/
+
 ### Backend
 - Node.js
 - Express.js
@@ -17,5 +19,6 @@ Stringz is a full-stack guitar learning platform built using React (Vite) on the
 - JWT Authentication
 - bcryptjs
 - CORS
+link: https://stringz.onrender.com
 
 
