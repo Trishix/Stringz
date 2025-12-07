@@ -11,9 +11,9 @@ const createAdmin = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log('✅ Connected to DB');
 
-        const adminEmail = 'trishit.swarnakar2024@nst.rishihood.edu.in';
-        const adminPassword = '132006';
-        const adminName = 'Trishit Swarnakar';
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        const adminName = process.env.ADMIN_NAME;
 
         // Check if user exists
         let user = await User.findOne({ email: adminEmail });
