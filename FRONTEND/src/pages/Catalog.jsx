@@ -47,7 +47,7 @@ const Catalog = () => {
         }, 500);
 
         return () => clearTimeout(timeoutId);
-    }, [filters, pagination.page]);
+    }, [filters, pagination.page, setSearchParams]);
 
     return (
         <div className="min-h-screen bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import lessonService from '../services/lessonService';
 import paymentService from '../services/paymentService';
 import Loader from '../components/common/Loader';
@@ -10,8 +10,8 @@ import ReviewSection from '../components/reviews/ReviewSection';
 
 const LessonDetail = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
-    const { isAuthenticated, user } = useAuth();
+    const { id } = useParams();
+    const { isAuthenticated } = useAuth();
 
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
