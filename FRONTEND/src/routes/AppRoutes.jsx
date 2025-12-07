@@ -8,8 +8,8 @@ import Footer from '../components/common/Footer';
 
 // Pages
 import Home from '../pages/Home';
-import Login from '../pages/Login';
-import Signup from '../pages/Signup';
+import Login from '../pages/login';
+import Signup from '../pages/signup';
 import Catalog from '../pages/Catalog';
 import LessonDetail from '../pages/LessonDetail';
 import StudentDashboard from '../pages/StudentDashboard';
