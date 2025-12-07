@@ -10,7 +10,7 @@ import ReviewSection from '../components/reviews/ReviewSection';
 
 const LessonDetail = () => {
     const { id } = useParams();
-    const { id } = useParams();
+
     const { isAuthenticated } = useAuth();
 
     const [lesson, setLesson] = useState(null);
