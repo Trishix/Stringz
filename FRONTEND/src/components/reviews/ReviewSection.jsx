@@ -5,7 +5,6 @@ import ReviewForm from './ReviewForm';
 import { Star, Trash2, Edit2, User } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-
 const ReviewSection = ({ lessonId }) => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
