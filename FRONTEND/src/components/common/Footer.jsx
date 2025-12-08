@@ -1,4 +1,5 @@
 import { Github, Twitter, Instagram } from 'lucide-react';
+import logo from '../../assets/images/logo.png';
 
 const Footer = () => {
     return (
@@ -6,7 +7,7 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">Stringz</h3>
+                        <img src={logo} alt="Stringz" className="h-10 mb-4" />
                         <p className="text-gray-400 text-sm leading-relaxed">
                             Master the art of guitar with our premium video courses. Learn from the best instructors at your own pace.
                         </p>

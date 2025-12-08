@@ -10,6 +10,8 @@ import Footer from '../components/common/Footer';
 import Home from '../pages/Home';
 import Login from '../pages/login';
 import Signup from '../pages/signup';
+import ContactPage from '../pages/ContactPage';
+import AboutPage from '../pages/AboutPage';
 import Catalog from '../pages/Catalog';
 import LessonDetail from '../pages/LessonDetail';
 import StudentDashboard from '../pages/StudentDashboard';
@@ -27,6 +29,8 @@ const AppRoutes = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/about" element={<AboutPage />} />
                     <Route path="/lessons" element={<Catalog />} />
                     <Route path="/lessons/:id" element={<LessonDetail />} />
 

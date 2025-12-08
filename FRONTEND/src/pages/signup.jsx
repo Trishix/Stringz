@@ -2,6 +2,7 @@ import { Link, Navigate } from 'react-router-dom';
 import RegisterForm from '../components/auth/RegisterForm';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/common/Loader';
+import logo from '../assets/images/logo.png';
 
 const Signup = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -19,6 +20,7 @@ const Signup = () => {
 
       <div className="max-w-md w-full space-y-8 bg-gray-800/50 p-8 rounded-2xl backdrop-blur-md border border-white/10 relative z-10 shadow-2xl">
         <div className="text-center">
+          <img src={logo} alt="Stringz" className="h-12 mx-auto mb-6" />
           <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
           <p className="mt-2 text-sm text-gray-400">
             Already have an account?{' '}
