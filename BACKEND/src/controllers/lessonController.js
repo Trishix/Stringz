@@ -39,6 +39,7 @@ exports.getAllLessons = async (req, res) => {
             total
         });
     } catch (error) {
+        console.error("Error in getAllLessons:", error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
