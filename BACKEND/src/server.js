@@ -26,7 +26,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use(cors({
-  origin: ["https://stringz-lijo.vercel.app", "http://localhost:5173", "http://localhost:5174", process.env.FRONTEND_URL],
+  origin: ["https://stringz-lijo.vercel.app", process.env.FRONTEND_URL],
   methods: "GET,POST,PUT,DELETE",
   credentials: true
 }));
