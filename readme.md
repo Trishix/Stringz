@@ -1,6 +1,5 @@
 # 🎸 Stringz - Master the Guitar
 
-![Stringz Banner](https://images.unsplash.com/photo-1510915361408-5435ebbb264e?q=80&w=2670&auto=format&fit=crop)
 
 > **Master the art of guitar with premium video courses from world-class instructors.**
 
@@ -44,14 +43,6 @@ Stringz is a modern, full-stack E-learning platform designed for guitar enthusia
 -   **JWT (JSON Web Tokens)**: Secure stateless authentication.
 -   **Cloudinary**: Optimization and storage for lesson videos and thumbnails.
 -   **Razorpay**: Payment gateway integration.
-
----
-
-## 📸 Screenshots
-
-| Landing Page | Lesson Catalog |
-| :---: | :---: |
-| <img src="https://images.unsplash.com/photo-1564186763531-bc6e4e20e8a4?q=80&w=600&auto=format&fit=crop" alt="Landing" width="400" /> | <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600&auto=format&fit=crop" alt="Catalog" width="400" /> |
 
 ---
 
