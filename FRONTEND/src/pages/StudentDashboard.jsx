@@ -81,6 +81,7 @@ const StudentDashboard = () => {
                     lessons={purchases}
                     loading={loading}
                     emptyMessage="You haven't purchased any lessons yet."
+                    purchased={true}
                 />
             </div>
         </div>
