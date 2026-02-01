@@ -3,9 +3,11 @@ import RegisterForm from '../components/auth/RegisterForm';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/common/Loader';
 import logo from '../assets/images/logo.png';
+import { GoogleLogin } from '@react-oauth/google';
+import toast from 'react-hot-toast';
 
 const Signup = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, googleLogin } = useAuth();
 
   if (loading) return <Loader />;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
@@ -30,6 +32,37 @@ const Signup = () => {
           </p>
         </div>
         <RegisterForm />
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-600"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-800 text-gray-400">Or sign up with</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              googleLogin(credentialResponse.credential)
+                .then(() => {
+                  toast.success('Signup successful!');
+                  // Navigation handled by isAuthenticated check
+                })
+                .catch((err) => {
+                  console.error(err);
+                  toast.error('Google signup failed');
+                });
+            }}
+            onError={() => {
+              toast.error('Google signup failed');
+            }}
+            theme="filled_black"
+            shape="pill"
+            text="signup_with"
+          />
+        </div>
       </div>
     </div>
   );

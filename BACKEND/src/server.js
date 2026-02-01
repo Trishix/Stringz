@@ -25,8 +25,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+
+// Request Logger
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  next();
+});
+
 app.use(cors({
-  origin: ["https://stringz-lijo.vercel.app", process.env.FRONTEND_URL],
+  origin: ["https://stringz-lijo.vercel.app", process.env.FRONTEND_URL, "http://localhost:5173", "http://localhost:5174"],
   methods: "GET,POST,PUT,DELETE",
   credentials: true
 }));

@@ -21,9 +21,23 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please provide a password"],
+      required: [
+        function () {
+          return !this.googleId;
+        },
+        "Please provide a password",
+      ],
       minlength: 6,
-      select: false, // Don't return password by default
+      select: false,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      select: false
+    },
+    avatar: {
+      type: String,
     },
     role: {
       type: String,

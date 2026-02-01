@@ -17,6 +17,14 @@ const authService = {
         return response.data;
     },
 
+    googleLogin: async (token) => {
+        const response = await api.post('/auth/google', { token });
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+        }
+        return response.data;
+    },
+
     logout: () => {
         localStorage.removeItem('token');
     },
