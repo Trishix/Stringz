@@ -1,0 +1,45 @@
+openapi: 3.0.0
+info:
+  title: Stringz API
+  description: API Documentation for Stringz Learning Platform
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api
+    description: Local server
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Lessons
+    description: Lesson management endpoints
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Validation error
+  /lessons:
+    get:
+      tags:
+        - Lessons
+      summary: Get all lessons
+      responses:
+        '200':
+          description: List of lessons
