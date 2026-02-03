@@ -32,6 +32,13 @@ const StudentDashboard = () => {
         fetchData();
     }, []);
 
+    const formatLearningTime = (minutes) => {
+        if (!minutes) return "0 mins";
+        if (minutes < 60) return `${minutes} mins`;
+        const hours = (minutes / 60).toFixed(1);
+        return `${hours} hrs`;
+    };
+
     if (loading) return <Loader fullScreen />;
 
     return (
@@ -61,7 +68,7 @@ const StudentDashboard = () => {
                             </div>
                             <div>
                                 <p className="text-gray-400 text-sm">Learning Time</p>
-                                <p className="text-2xl font-bold">{stats.totalLearningTime || 0} hrs</p>
+                                <p className="text-2xl font-bold">{formatLearningTime(stats.totalLearningTime)}</p>
                             </div>
                         </div>
 

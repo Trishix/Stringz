@@ -23,21 +23,7 @@ export class StudentService {
         // 1. Handle Daily Activity & Coins
         const user = await this.userRepository.findOne(userId);
         if (user) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            // Check if active today
-            const lastActive = user.activeDates.length > 0
-                ? new Date(user.activeDates[user.activeDates.length - 1])
-                : null;
-
-            if (lastActive) lastActive.setHours(0, 0, 0, 0);
-
-            if (!lastActive || lastActive.getTime() !== today.getTime()) {
-                user.activeDates.push(today);
-                user.coins = (user.coins || 0) + 10; // Daily reward
-                await user.save();
-            }
+            await this.markDailyActivity(user);
         }
 
         // 2. Calculate Streak
@@ -75,7 +61,7 @@ export class StudentService {
         // Calculate total learning time
         const progress = await UserProgress.find({ user: userId });
         const totalSeconds = progress.reduce((acc, curr) => acc + curr.watchedDuration, 0);
-        const totalLearningTime = Math.round(totalSeconds / 3600); // Hours
+        const totalLearningTime = Math.round(totalSeconds / 60); // Minutes
 
         return {
             purchaseCount: purchases.length,
@@ -113,6 +99,31 @@ export class StudentService {
         progress.watchedDuration += duration;
         progress.lastPosition = position;
         await progress.save();
+
+        // Mark user as active for the day
+        const user = await this.userRepository.findOne(userId);
+        if (user) {
+            await this.markDailyActivity(user);
+        }
+
         return progress;
+    }
+
+    private async markDailyActivity(user: IUser) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if active today
+        const lastActive = user.activeDates.length > 0
+            ? new Date(user.activeDates[user.activeDates.length - 1])
+            : null;
+
+        if (lastActive) lastActive.setHours(0, 0, 0, 0);
+
+        if (!lastActive || lastActive.getTime() !== today.getTime()) {
+            user.activeDates.push(today);
+            user.coins = (user.coins || 0) + 10; // Daily reward
+            await user.save();
+        }
     }
 }
