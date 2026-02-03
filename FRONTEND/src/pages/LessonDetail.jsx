@@ -24,7 +24,10 @@ const LessonDetail = () => {
                 const lessonData = await lessonService.getLessonById(id);
                 setLesson(lessonData);
 
-                if (isAuthenticated) {
+                // Auto-grant access if free
+                if (lessonData.price === 0) {
+                    setHasAccess(true);
+                } else if (isAuthenticated) {
                     const accessData = await paymentService.checkAccess(id);
                     setHasAccess(accessData.hasAccess);
                 }

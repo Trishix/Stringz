@@ -1,14 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import lessonService from '../../services/lessonService';
 import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
 
 const LessonForm = ({ lessonToEdit, onSuccess }) => {
-    const { register, handleSubmit, reset, setValue } = useForm();
+    const { register, handleSubmit, reset, setValue, watch } = useForm();
     const [isLoading, setIsLoading] = useState(false);
     const [videoFile, setVideoFile] = useState(null);
     const [thumbFile, setThumbFile] = useState(null);
+    const [generatedThumb, setGeneratedThumb] = useState(null);
+    const fileInputRef = useRef(null);
+
+    const handleVideoSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setVideoFile(file);
+
+            // Extract metadata
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                window.URL.revokeObjectURL(video.src);
+                const duration = video.duration / 60; // to minutes
+                setValue('duration', parseFloat(duration.toFixed(2)));
+
+                // Generate thumbnail at 1s mark
+                video.currentTime = 1;
+            };
+
+            video.onseeked = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg');
+                setGeneratedThumb(dataUrl);
+            };
+
+            video.src = URL.createObjectURL(file);
+        }
+    };
 
     useEffect(() => {
         if (lessonToEdit) {
@@ -16,8 +49,12 @@ const LessonForm = ({ lessonToEdit, onSuccess }) => {
             Object.keys(lessonToEdit).forEach(key => {
                 setValue(key, lessonToEdit[key]);
             });
+            if (lessonToEdit.price === 0) {
+                setValue('isFree', true);
+            }
         } else {
             reset();
+            setGeneratedThumb(null);
         }
         setVideoFile(null);
         setThumbFile(null);
@@ -104,17 +141,34 @@ const LessonForm = ({ lessonToEdit, onSuccess }) => {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-300">Price (₹)</label>
-                    <input
-                        {...register('price', { required: 'Price is required' })}
-                        type="number"
-                        className="mt-1 bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5"
-                    />
+                    <div className="flex gap-2 items-center">
+                        <input
+                            {...register('price', { required: 'Price is required', min: 0 })}
+                            type="number"
+                            disabled={watch('isFree')}
+                            className="mt-1 bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5 disabled:opacity-50"
+                        />
+                        <div className="flex items-center mt-1">
+                            <input
+                                type="checkbox"
+                                id="isFree"
+                                {...register('isFree')}
+                                onChange={(e) => {
+                                    setValue('isFree', e.target.checked);
+                                    if (e.target.checked) setValue('price', 0);
+                                }}
+                                className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                            />
+                            <label htmlFor="isFree" className="ml-2 text-sm text-gray-300">Free</label>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-300">Duration (mins)</label>
                     <input
                         {...register('duration', { required: 'Duration is required' })}
                         type="number"
+                        step="0.01"
                         className="mt-1 bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5"
                     />
                 </div>
@@ -126,20 +180,44 @@ const LessonForm = ({ lessonToEdit, onSuccess }) => {
                     <input
                         type="file"
                         accept="video/*"
-                        onChange={(e) => setVideoFile(e.target.files[0])}
+                        onChange={handleVideoSelect}
                         className="mt-1 block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                     />
                     {lessonToEdit && <p className="text-xs text-gray-500 mt-1">Leave empty to keep current video</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-300">Thumbnail Image</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setThumbFile(e.target.files[0])}
-                        className="mt-1 block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                    />
-                    {lessonToEdit && <p className="text-xs text-gray-500 mt-1">Leave empty to keep current thumbnail</p>}
+                    <div className="space-y-2">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={(e) => setThumbFile(e.target.files[0])}
+                            className="mt-1 block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                        />
+                        {generatedThumb && (
+                            <div className="relative group w-32 h-20 rounded overflow-hidden border border-gray-600">
+                                <img src={generatedThumb} alt="Generated" className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        // Convert dataURL to file and set it
+                                        fetch(generatedThumb)
+                                            .then(res => res.blob())
+                                            .then(blob => {
+                                                const file = new File([blob], "thumbnail.jpg", { type: "image/jpeg" });
+                                                setThumbFile(file);
+                                                // Clear manual input if needed or just override
+                                                toast.success('Thumbnail selected from video');
+                                            });
+                                    }}
+                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs text-white font-bold"
+                                >
+                                    Use This
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
