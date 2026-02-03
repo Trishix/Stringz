@@ -10,6 +10,7 @@ class RedisService {
     private constructor() {
         // Use REDIS_URL from env or default to localhost
         const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+        console.log(`Attempting to connect to Redis at: ${redisUrl.includes('@') ? redisUrl.split('@')[1] : redisUrl}`);
         this.redis = new Redis(redisUrl, {
             // Retry strategy
             retryStrategy(times) {
