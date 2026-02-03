@@ -15,7 +15,7 @@ class EmailService {
         // Initialize Resend with API Key
         const apiKey = process.env.RESEND_API_KEY;
         if (!apiKey) {
-            Logger.warn('⚠️ RESEND_API_KEY is not defined. Email functionality will be limited.');
+            throw new Error('RESEND_API_KEY is not defined');
         }
         this.resend = new Resend(apiKey);
     }

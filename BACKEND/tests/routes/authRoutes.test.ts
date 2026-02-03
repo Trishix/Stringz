@@ -38,6 +38,11 @@ jest.mock('../../src/middleware/auth', () => ({
     }
 }));
 
+// Mock Rate Limiters
+jest.mock('../../src/middleware/rateLimiters', () => ({
+    authLimiter: (req: any, res: any, next: any) => next()
+}));
+
 import app from '../../src/app';
 
 const mockUserService = UserService as jest.MockedClass<typeof UserService>;

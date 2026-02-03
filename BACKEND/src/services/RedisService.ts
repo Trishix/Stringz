@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import dotenv from 'dotenv';
+import Logger from '../utils/Logger';
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ class RedisService {
     private constructor() {
         // Use REDIS_URL from env or default to localhost
         const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-        console.log(`Attempting to connect to Redis at: ${redisUrl.includes('@') ? redisUrl.split('@')[1] : redisUrl}`);
+        Logger.info(`Attempting to connect to Redis at: ${redisUrl.includes('@') ? redisUrl.split('@')[1] : redisUrl}`);
         this.redis = new Redis(redisUrl, {
             // Retry strategy
             retryStrategy(times) {
@@ -21,11 +22,11 @@ class RedisService {
         });
 
         this.redis.on('connect', () => {
-            console.log('✅ Redis Connected');
+            Logger.info('✅ Redis Connected');
         });
 
         this.redis.on('error', (err) => {
-            console.error('❌ Redis Connection Error:', err);
+            Logger.error(`❌ Redis Connection Error: ${err}`);
         });
     }
 

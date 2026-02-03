@@ -11,6 +11,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import yaml from 'yamljs';
+import Logger from './utils/Logger';
 
 // Import Routes
 import authRoutes from './routes/authRoutes';
@@ -32,9 +33,12 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
-// app.use(mongoSanitize());
-// // app.use(xss()); 
-// app.use(hpp());
+if (process.env.NODE_ENV !== 'test') {
+    app.use(mongoSanitize());
+}
+// xss-clean types are missing, skipping for now until fixed properly or replaced with sanitization middleware
+// app.use(xss()); 
+app.use(hpp());
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -60,7 +64,7 @@ app.use(cors({
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.log('Blocked origin:', origin);
+            Logger.warn(`Blocked origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },

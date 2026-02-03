@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { IUser } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
+import Logger from '../utils/Logger';
 
 // Extend Request type if not globally available, but let's assume global augmentation works or use casting
 // Ideally, we should ensure Request.user is typed. 
@@ -22,7 +23,7 @@ const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
 
         next();
     } catch (error) {
-        console.error('Admin Auth Error:', error);
+        Logger.error(`Admin Auth Error: ${error}`);
         res.status(500).json({ message: 'Server error during authorization' });
     }
 };

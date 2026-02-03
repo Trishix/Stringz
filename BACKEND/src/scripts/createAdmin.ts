@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import User from '../models/User';
+import Logger from '../utils/Logger';
 
 // Load environment variables from the parent directory's .env file if running from src/scripts
 // Or just load generic .env
@@ -13,7 +14,7 @@ const createAdmin = async () => {
             throw new Error('MONGODB_URI is not defined');
         }
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log('✅ Connected to DB');
+        Logger.info('✅ Connected to DB');
 
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPassword = process.env.ADMIN_PASSWORD;
@@ -27,20 +28,20 @@ const createAdmin = async () => {
         let user = await User.findOne({ email: adminEmail });
 
         if (user) {
-            console.log('User already exists. Updating role to admin...');
+            Logger.info('User already exists. Updating role to admin...');
             user.role = 'admin';
             user.password = adminPassword; // Update password just in case (Will be hashed by pre-save hook)
             await user.save();
-            console.log('✅ User updated to Admin successfully');
+            Logger.info('✅ User updated to Admin successfully');
         } else {
-            console.log('Creating new Admin user...');
+            Logger.info('Creating new Admin user...');
             user = await User.create({
                 name: adminName,
                 email: adminEmail,
                 password: adminPassword,
                 role: 'admin'
             });
-            console.log('✅ Admin user created successfully');
+            Logger.info('✅ Admin user created successfully');
         }
 
         console.log('\n================================');
@@ -51,7 +52,7 @@ const createAdmin = async () => {
 
         await mongoose.disconnect();
     } catch (error: any) {
-        console.error('❌ Error:', error.message);
+        Logger.error(`❌ Error: ${error.message}`);
         process.exit(1);
     }
 };

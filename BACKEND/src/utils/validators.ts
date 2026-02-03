@@ -12,6 +12,10 @@ export const validateLogin = [
     check('password', 'Password is required').exists()
 ];
 
+export const validateGoogleLogin = [
+    check('token', 'Google token is required').not().isEmpty()
+];
+
 export const validateLesson = [
     check('title', 'Title is required').not().isEmpty(),
     check('description', 'Description is required').not().isEmpty(),

@@ -7,6 +7,8 @@ import upload from '../middleware/upload';
 // OR import upload if I refactor it next.
 // I will refactor upload to TS right now to be clean.
 
+import { validateLesson, handleValidationErrors } from '../utils/validators';
+
 const router = Router();
 const lessonController = new LessonController();
 
@@ -17,6 +19,8 @@ router.post('/',
     auth,
     adminAuth,
     upload.fields([{ name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]),
+    validateLesson,
+    handleValidationErrors,
     lessonController.createLesson
 );
 
@@ -24,6 +28,8 @@ router.put('/:id',
     auth,
     adminAuth,
     upload.fields([{ name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]),
+    validateLesson,
+    handleValidationErrors,
     lessonController.updateLesson
 );
 

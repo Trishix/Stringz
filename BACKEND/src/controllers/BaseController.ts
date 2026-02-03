@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import Logger from '../utils/Logger';
 
 export abstract class BaseController {
 
@@ -37,7 +38,7 @@ export abstract class BaseController {
     }
 
     public fail(res: Response, error: Error | string) {
-        console.log(error);
+        Logger.error(error);
         return res.status(500).json({
             message: error.toString()
         });

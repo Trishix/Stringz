@@ -1,5 +1,6 @@
 import { v2 as cloudinary, UploadApiResponse, UploadApiOptions } from 'cloudinary';
 import dotenv from 'dotenv';
+import Logger from '../utils/Logger';
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ export class CloudinaryService {
             const response = await cloudinary.uploader.upload(localFilePath, options);
             return response;
         } catch (error) {
-            console.error('Cloudinary Upload Error:', error);
+            Logger.error(`Cloudinary Upload Error: ${error}`);
             throw error;
         }
     }

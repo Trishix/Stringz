@@ -45,7 +45,7 @@ export class StudentService {
         // user.purchases might be strings or ObjectIds.
         // We should cast or use string comparison.
 
-        const purchases = user.purchases as any[]; // TODO: Define strict type for purchases in IUser
+        const purchases = user.purchases;
         return purchases.some(p => p.toString() === lessonId.toString());
     }
 }

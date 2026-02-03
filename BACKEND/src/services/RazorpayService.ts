@@ -8,9 +8,12 @@ export class RazorpayService {
     private instance: any; // Type 'any' because strict typing for Razorpay instance can be tricky or needs generic 'Razorpay' type
 
     constructor() {
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            throw new Error('RAZORPAY credentials are not defined');
+        }
         this.instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID || 'test_key_id',
-            key_secret: process.env.RAZORPAY_KEY_SECRET || 'test_key_secret'
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
         });
     }
 
@@ -24,7 +27,8 @@ export class RazorpayService {
     }
 
     public verifySignature(orderId: string, paymentId: string, signature: string): boolean {
-        const secret = process.env.RAZORPAY_KEY_SECRET || 'test_key_secret';
+        const secret = process.env.RAZORPAY_KEY_SECRET;
+        if (!secret) throw new Error('RAZORPAY_KEY_SECRET is not defined');
         const body = orderId + "|" + paymentId;
         const expectedSignature = crypto
             .createHmac('sha256', secret)

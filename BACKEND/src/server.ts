@@ -3,6 +3,7 @@ import http from 'http';
 import app from './app';
 import dotenv from 'dotenv';
 import socketService from './services/SocketService';
+import Logger from './utils/Logger';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const startServer = async () => {
             throw new Error('MONGODB_URI is not defined');
         }
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log('✅ MongoDB Connected');
+        Logger.info('✅ MongoDB Connected');
 
         // Check if Redis is connected (optional, but good for debugging since we auto-connect in service)
 
@@ -25,10 +26,10 @@ const startServer = async () => {
         socketService.init(httpServer);
 
         httpServer.listen(PORT, () => {
-            console.log(`🚀 Server running on port ${PORT}`);
+            Logger.info(`🚀 Server running on port ${PORT}`);
         });
     } catch (error: any) {
-        console.error('❌ Server Error:', error.message);
+        Logger.error(`❌ Server Error: ${error.message}`);
         process.exit(1);
     }
 };

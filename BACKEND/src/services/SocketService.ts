@@ -1,5 +1,6 @@
 import { Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
+import Logger from '../utils/Logger';
 
 class SocketService {
     private static instance: SocketService;
@@ -23,14 +24,14 @@ class SocketService {
         });
 
         this.io.on('connection', (socket) => {
-            console.log('🔌 Socket Connected:', socket.id);
+            Logger.info(`🔌 Socket Connected: ${socket.id}`);
 
             socket.on('disconnect', () => {
-                console.log('🔌 Socket Disconnected:', socket.id);
+                Logger.info(`🔌 Socket Disconnected: ${socket.id}`);
             });
         });
 
-        console.log('✅ Socket.IO Initialized');
+        Logger.info('✅ Socket.IO Initialized');
     }
 
     public getIO(): SocketIOServer {
