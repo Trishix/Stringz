@@ -7,6 +7,7 @@ import PurchaseButton from '../components/lessons/PurchaseButton';
 import { useAuth } from '../context/AuthContext';
 import { Clock, BarChart, User, Share2, PlayCircle, CheckCircle } from 'lucide-react';
 import ReviewSection from '../components/reviews/ReviewSection';
+import { linkify } from '../utils/textUtils';
 
 const LessonDetail = () => {
     const { id } = useParams();
@@ -84,7 +85,9 @@ const LessonDetail = () => {
                     <div className="lg:col-span-2 space-y-8">
                         <div className="bg-gray-800/50 rounded-2xl p-8 border border-white/5 backdrop-blur-sm">
                             <h2 className="text-2xl font-bold mb-4">About this course</h2>
-                            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{lesson.description}</p>
+                            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                {linkify(lesson.description)}
+                            </p>
                         </div>
 
                         <ReviewSection lessonId={id} />
