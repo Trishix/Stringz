@@ -15,17 +15,22 @@ const VideoPlayerPage = () => {
     useEffect(() => {
         const init = async () => {
             try {
-                // Check access first
-                const { hasAccess } = await paymentService.checkAccess(id);
+                // Fetch lesson details first to check price
+                const lessonData = await lessonService.getLessonById(id);
+                setLesson(lessonData);
 
-                if (!hasAccess) {
-                    setError('Access Denied. You have not purchased this lesson.');
+                // If lesson is free, grant access immediately
+                if (lessonData.price === 0) {
                     setLoading(false);
                     return;
                 }
 
-                const data = await lessonService.getLessonById(id);
-                setLesson(data);
+                // If not free, check for purchase
+                const { hasAccess } = await paymentService.checkAccess(id);
+
+                if (!hasAccess) {
+                    setError('Access Denied. You have not purchased this lesson.');
+                }
             } catch (err) {
                 setError('Failed to load lesson. Please try again.');
                 console.error(err);
