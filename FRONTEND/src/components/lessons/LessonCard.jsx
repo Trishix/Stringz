@@ -11,9 +11,14 @@ const LessonCard = ({ lesson, purchased: propPurchased = false }) => {
         (typeof p === 'object' && p._id === lesson._id)
     ));
 
+    const linkTo = isPurchased ? `/lessons/${lesson._id}/watch` : `/lessons/${lesson._id}`;
+
     return (
-        <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-white/5 hover:border-purple-500/30 transition-all hover:-translate-y-1 shadow-lg group">
-            <Link to={isPurchased ? `/lessons/${lesson._id}/watch` : `/lessons/${lesson._id}`} className="block relative aspect-video overflow-hidden">
+        <Link
+            to={linkTo}
+            className="block bg-gray-800/50 rounded-xl overflow-hidden border border-white/5 hover:border-purple-500/30 transition-all hover:-translate-y-1 shadow-lg group"
+        >
+            <div className="relative aspect-video overflow-hidden">
                 <img
                     src={lesson.thumbnailUrl || 'https://via.placeholder.com/640x360?text=No+Thumbnail'}
                     alt={lesson.title}
@@ -40,14 +45,12 @@ const LessonCard = ({ lesson, purchased: propPurchased = false }) => {
                         </span>
                     </div>
                 )}
-            </Link>
+            </div>
 
             <div className="p-5">
-                <Link to={isPurchased ? `/lessons/${lesson._id}/watch` : `/lessons/${lesson._id}`}>
-                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-1 group-hover:text-purple-400 transition-colors">
-                        {lesson.title}
-                    </h3>
-                </Link>
+                <h3 className="text-lg font-bold text-white mb-2 line-clamp-1 group-hover:text-purple-400 transition-colors">
+                    {lesson.title}
+                </h3>
                 <p className="text-sm text-gray-400 mb-4 line-clamp-2">
                     {lesson.description}
                 </p>
@@ -59,7 +62,7 @@ const LessonCard = ({ lesson, purchased: propPurchased = false }) => {
                     </div>
                     <div className="flex items-center gap-1">
                         <Star size={14} className="text-yellow-500" />
-                        <span>{lesson.popularity || 0} enrolled</span>
+                        <span>{lesson.salesCount || 0} enrolled</span>
                     </div>
                 </div>
 
@@ -70,7 +73,7 @@ const LessonCard = ({ lesson, purchased: propPurchased = false }) => {
                     </span>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
