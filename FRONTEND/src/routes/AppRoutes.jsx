@@ -9,7 +9,7 @@ import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 
 // Pages - Lazy Loaded
-const Home = lazy(() => import('../pages/Home'));
+import Home from '../pages/Home';
 const Login = lazy(() => import('../pages/login'));
 const Signup = lazy(() => import('../pages/signup'));
 const ContactPage = lazy(() => import('../pages/ContactPage'));
