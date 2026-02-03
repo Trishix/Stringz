@@ -5,9 +5,11 @@ import paymentService from '../services/paymentService';
 import VideoPlayer from '../components/lessons/VideoPlayer';
 import Loader from '../components/common/Loader';
 import { ArrowLeft, Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const VideoPlayerPage = () => {
     const { id } = useParams();
+    const { isAuthenticated } = useAuth(); // Get auth state
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,17 +21,25 @@ const VideoPlayerPage = () => {
                 const lessonData = await lessonService.getLessonById(id);
                 setLesson(lessonData);
 
-                // If lesson is free, grant access immediately
+                // If lesson is free
                 if (lessonData.price === 0) {
-                    setLoading(false);
-                    return;
-                }
-
-                // If not free, check for purchase
-                const { hasAccess } = await paymentService.checkAccess(id);
-
-                if (!hasAccess) {
-                    setError('Access Denied. You have not purchased this lesson.');
+                    if (!isAuthenticated) {
+                        setError('Please login to watch free lessons.');
+                    } else {
+                        // Grant access if logged in
+                        setLoading(false);
+                        return;
+                    }
+                } else {
+                    // If not free, check for purchase (requires auth usually checked by service or here)
+                    if (!isAuthenticated) {
+                        setError('Please login to purchase this lesson.');
+                    } else {
+                        const { hasAccess } = await paymentService.checkAccess(id);
+                        if (!hasAccess) {
+                            setError('Access Denied. You have not purchased this lesson.');
+                        }
+                    }
                 }
             } catch (err) {
                 setError('Failed to load lesson. Please try again.');
@@ -39,8 +49,8 @@ const VideoPlayerPage = () => {
             }
         };
 
-        init();
-    }, [id]);
+        if (id) init();
+    }, [id, isAuthenticated]);
 
     if (loading) return <Loader fullScreen />;
 
@@ -49,9 +59,15 @@ const VideoPlayerPage = () => {
             <Lock className="w-16 h-16 text-red-500 mb-4" />
             <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
             <p className="text-gray-400 mb-6">{error}</p>
-            <Link to={`/lessons/${id}`} className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700">
-                Go to Lesson Page
-            </Link>
+            {error.includes('login') ? (
+                <Link to="/login" className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700">
+                    Go to Login
+                </Link>
+            ) : (
+                <Link to={`/lessons/${id}`} className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700">
+                    Go to Lesson Page
+                </Link>
+            )}
         </div>
     );
 
