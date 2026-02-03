@@ -2,54 +2,82 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 const ActivityHeatmap = ({ activeDates = [] }) => {
-    // Generate dates for the last 365 days
-    const { weeks, monthLabels } = useMemo(() => {
+    // Helper to get days in a month
+    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+
+    // Group dates by month for the last year
+    const monthsData = useMemo(() => {
         const today = new Date();
-        const endDate = today;
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 364); // 52 weeks * 7 = 364
+        const months = [];
 
-        // Align start date to Sunday for clean grid
-        const dayOfWeek = startDate.getDay();
-        const alignedStartDate = new Date(startDate);
-        alignedStartDate.setDate(startDate.getDate() - dayOfWeek);
+        // We want to show roughly the last 12 months. 
+        // Let's iterate backwards 11 months from current + current month = 12 months.
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const year = d.getFullYear();
+            const monthIndex = d.getMonth(); // 0-11
+            const monthName = d.toLocaleString('default', { month: 'short' });
+            const daysInMonth = getDaysInMonth(year, monthIndex);
 
-        const weeksArr = [];
-        const monthsArr = [];
-        let currentWeek = [];
-        let lastMonth = -1;
+            // Generate weeks for this specific month
+            const weeks = [];
+            let currentWeek = Array(7).fill(null); // filled with null initially
 
-        // Iterate day by day
-        const currentDate = new Date(alignedStartDate);
+            // Fill initial empty days if month doesn't start on Sunday
+            // getDay(): 0 = Sunday, 1 = Monday...
+            const startDay = new Date(year, monthIndex, 1).getDay();
 
-        // We want 53 columns (weeks) to cover the year fully including potential overlap
-        for (let i = 0; i < 53 * 7; i++) {
-            const dateObj = new Date(currentDate);
-            currentWeek.push(dateObj);
+            // Determine active status for each day
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, monthIndex, day);
+                const dayOfWeek = dateObj.getDay();
 
-            if (currentWeek.length === 7) {
-                weeksArr.push(currentWeek);
+                // If it's a new week (and not the very first iteration where startDay might be > 0), push old week and reset
+                // But specifically for the grid logic:
+                // We just place 'day' at 'dayOfWeek'. 
+                // If dayOfWeek is 0 (Sunday) and we have data in currentWeek, implies new row??
+                // Actually typical heatmap columns are WEEKS (vertical). Rows are DAYS (horizontal).
+                // Wait, standard contribution graph:
+                // Columns = Weeks.
+                // Rows = Days (Sun, Mon, Tue...).
+                // So day 1 (say Wed) goes to Column 0, Row 3.
+                // day 2 (Thu) goes to Column 0, Row 4.
 
-                // Content of week for month label judgment
-                // Usually we label the month if the first day of the week is in that month
-                // or if the month changed during this week (specifically logic varies)
-                // GitHub puts label on the column where the new month starts
-                const firstDayOfWeek = currentWeek[0];
-                const month = firstDayOfWeek.getMonth();
-                const monthName = firstDayOfWeek.toLocaleString('default', { month: 'short' });
+                // We need to build COLUMNS.
+                // Algorithm:
+                // 1. Calculate which "Week Index" of the month this day belongs to.
+                // Week 0: days before first Saturday...
+                // Actually simpler: Just push days into a flat array of "slots" for the month, allowing for offsets.
 
-                if (month !== lastMonth) {
-                    monthsArr.push({ name: monthName, index: weeksArr.length - 1 });
-                    lastMonth = month;
-                }
-
-                currentWeek = [];
+                // Let's assume standard Column-first flow (Weeks are columns).
+                // Column 0: may have empty slots at top.
             }
 
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
+            // REVISED ALGORITHM for Column-based Month view
+            const totalSlots = startDay + daysInMonth;
+            const numWeeks = Math.ceil(totalSlots / 7);
 
-        return { weeks: weeksArr, monthLabels: monthsArr };
+            const monthWeeks = [];
+            for (let w = 0; w < numWeeks; w++) {
+                const weekData = Array(7).fill(null);
+                for (let d = 0; d < 7; d++) {
+                    const dayIndex = (w * 7) + d; // absolute index in the month's grid
+                    const dayNum = dayIndex - startDay + 1;
+
+                    if (dayNum > 0 && dayNum <= daysInMonth) {
+                        weekData[d] = new Date(year, monthIndex, dayNum);
+                    }
+                }
+                monthWeeks.push(weekData);
+            }
+
+            months.push({
+                name: monthName,
+                year,
+                weeks: monthWeeks
+            });
+        }
+        return months;
     }, []);
 
     const activeSet = useMemo(() => {
@@ -60,43 +88,44 @@ const ActivityHeatmap = ({ activeDates = [] }) => {
         <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 w-full overflow-x-auto">
             <h3 className="text-xl font-semibold mb-4 text-white">Activity History</h3>
 
-            <div className="min-w-[800px] overflow-hidden">
-                {/* Month Labels */}
-                <div className="flex mb-2 text-xs text-gray-400 relative h-4">
-                    {monthLabels.map((month, i) => (
-                        <div
-                            key={i}
-                            style={{ left: `${month.index * 14}px` }} // 14px approx width of column (w-3 + gap)
-                            className="absolute"
-                        >
+            <div className="flex gap-4 min-w-max pb-2">
+                {monthsData.map((month, mIndex) => (
+                    <div key={mIndex} className="flex flex-col gap-2">
+                        {/* Month Label */}
+                        <span className="text-xs text-gray-400 font-medium h-4 block text-center w-full">
                             {month.name}
-                        </div>
-                    ))}
-                </div>
+                        </span>
 
-                {/* Heatmap Grid */}
-                <div className="flex gap-[2px]">
-                    {weeks.map((week, wIndex) => (
-                        <div key={wIndex} className="flex flex-col gap-[2px]">
-                            {week.map((date, dIndex) => {
-                                const isActive = activeSet.has(date.toDateString());
-                                return (
-                                    <motion.div
-                                        key={dIndex}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: (wIndex * 7 + dIndex) * 0.0005 }}
-                                        className={`w-3 h-3 rounded-sm ${isActive
-                                                ? 'bg-purple-500 shadow-glow-purple-subtle'
-                                                : 'bg-gray-700/30 hover:bg-gray-700'
-                                            }`}
-                                        title={date.toDateString()}
-                                    />
-                                );
-                            })}
+                        {/* Month Grid */}
+                        <div className="flex gap-[3px]">
+                            {month.weeks.map((week, wIndex) => (
+                                <div key={wIndex} className="flex flex-col gap-[3px]">
+                                    {week.map((date, dIndex) => {
+                                        if (!date) {
+                                            // Empty slot (padding for start/end of month)
+                                            return <div key={dIndex} className="w-3 h-3" />;
+                                        }
+
+                                        const isActive = activeSet.has(date.toDateString());
+                                        return (
+                                            <motion.div
+                                                key={dIndex}
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: (mIndex * 0.1) + (wIndex * 0.01) }}
+                                                className={`w-3 h-3 rounded-sm ${isActive
+                                                        ? 'bg-purple-500 shadow-glow-purple-subtle'
+                                                        : 'bg-gray-700/30 hover:bg-gray-700'
+                                                    }`}
+                                                title={date.toDateString()}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
 
             <div className="flex items-center justify-end gap-2 mt-4 text-xs text-gray-400">
