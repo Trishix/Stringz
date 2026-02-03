@@ -20,6 +20,11 @@ export const FloatingNav = ({
     const { user, logout, isAuthenticated } = useAuth();
     const location = useLocation();
 
+    // Reset visibility when route changes
+    React.useEffect(() => {
+        setVisible(true);
+    }, [location.pathname]);
+
     useMotionValueEvent(scrollYProgress, "change", (current) => {
         // Check if current is not undefined and is a number
         if (typeof current === "number") {
