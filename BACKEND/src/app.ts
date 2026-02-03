@@ -2,10 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
+// import mongoSanitize from 'express-mongo-sanitize';
+import { mongoSanitize } from './middleware/mongoSanitize';
 // xss-clean types might be missing, assuming handled or ignored in server.ts previously
 // import xss from 'xss-clean'; 
 import rateLimit from 'express-rate-limit';
+// @ts-ignore
 import hpp from 'hpp';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
