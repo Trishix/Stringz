@@ -1,49 +1,69 @@
 import request from 'supertest';
-import app from '../../src/app';
 import { UserService } from '../../src/services/UserService';
 
 // Mock Mongoose to avoid connection errors
-jest.mock('mongoose', () => ({
-    connect: jest.fn().mockResolvedValue(true),
-    disconnect: jest.fn().mockResolvedValue(true),
-    Schema: class { },
-    model: jest.fn(),
-}));
+jest.mock('mongoose', () => {
+    return {
+        connect: jest.fn().mockResolvedValue(true),
+        disconnect: jest.fn().mockResolvedValue(true),
+        Schema: class {
+            static Types: any = { ObjectId: 'ObjectId' };
+            methods: any = {};
+            statics: any = {};
+            pre: any = jest.fn();
+            post: any = jest.fn();
+            index: any = jest.fn();
+        },
+        model: jest.fn().mockReturnValue('MockModel'),
+        Types: { ObjectId: class { } }
+    };
+});
+
+// Mock other routes to avoid unwanted dependencies loading
+jest.mock('../../src/routes/lessonRoutes', () => jest.requireActual('express').Router());
+jest.mock('../../src/routes/paymentRoutes', () => jest.requireActual('express').Router());
+jest.mock('../../src/routes/studentRoutes', () => jest.requireActual('express').Router());
+jest.mock('../../src/routes/adminRoutes', () => jest.requireActual('express').Router());
+jest.mock('../../src/routes/reviewRoutes', () => jest.requireActual('express').Router());
+jest.mock('../../src/routes/contactRoutes', () => jest.requireActual('express').Router());
 
 // Mock UserService
 jest.mock('../../src/services/UserService');
 
-// Mock Auth Middleware to bypass token check
+// Mock Auth Middleware
 jest.mock('../../src/middleware/auth', () => ({
     auth: (req: any, res: any, next: any) => {
-        req.user = { id: 'user_id', role: 'student' }; // Mock user attached by middleware
+        req.user = { id: 'user_id', role: 'student' };
         next();
     }
 }));
+
+import app from '../../src/app';
 
 const mockUserService = UserService as jest.MockedClass<typeof UserService>;
 
 describe('Auth Routes', () => {
     let userServiceMockInstance: any;
 
+    beforeAll(() => {
+        // Validate instantiation
+        if (mockUserService.mock.instances.length === 0) {
+            console.error("UserService was not instantiated! Check import order.");
+        } else {
+            // Get the instance that was created when AuthController was initialized
+            userServiceMockInstance = mockUserService.mock.instances[0];
+        }
+    });
+
     beforeEach(() => {
         jest.clearAllMocks();
-
-        // Ensure mock instance has the methods mocked
-        userServiceMockInstance = {
-            signup: jest.fn(),
-            login: jest.fn(),
-            getMe: jest.fn(),
-            googleLogin: jest.fn()
-        };
-
-        mockUserService.mockImplementation(() => userServiceMockInstance);
     });
 
     describe('POST /api/auth/signup', () => {
         it('should return 201 and token on successful signup', async () => {
             const mockResponse = { token: 'abc', user: { id: '1', email: 'test@test.com' } };
-            userServiceMockInstance.signup.mockResolvedValue(mockResponse);
+            // Set implementation on the instance
+            (userServiceMockInstance.signup as jest.Mock).mockResolvedValue(mockResponse);
 
             const res = await request(app)
                 .post('/api/auth/signup')
@@ -67,19 +87,18 @@ describe('Auth Routes', () => {
                 });
             expect(res.status).toBe(400);
             expect(res.body).toHaveProperty('errors');
-            // UserService should not be called
             expect(userServiceMockInstance.signup).not.toHaveBeenCalled();
         });
 
         it('should return 400 if user exists', async () => {
-            userServiceMockInstance.signup.mockRejectedValue(new Error('User already exists'));
+            (userServiceMockInstance.signup as jest.Mock).mockRejectedValue(new Error('User already exists'));
 
             const res = await request(app)
                 .post('/api/auth/signup')
                 .send({
                     name: 'Test',
                     email: 'exists@test.com',
-                    password: 'pass'
+                    password: 'password123'
                 });
 
             expect(res.status).toBe(400);
@@ -90,7 +109,7 @@ describe('Auth Routes', () => {
     describe('POST /api/auth/login', () => {
         it('should return 200 and token on success', async () => {
             const mockResponse = { token: 'abc', user: { id: '1' } };
-            userServiceMockInstance.login.mockResolvedValue(mockResponse);
+            (userServiceMockInstance.login as jest.Mock).mockResolvedValue(mockResponse);
 
             const res = await request(app)
                 .post('/api/auth/login')
@@ -101,7 +120,7 @@ describe('Auth Routes', () => {
         });
 
         it('should return 400 on invalid credentials', async () => {
-            userServiceMockInstance.login.mockRejectedValue(new Error('Invalid credentials'));
+            (userServiceMockInstance.login as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
 
             const res = await request(app)
                 .post('/api/auth/login')
@@ -115,7 +134,7 @@ describe('Auth Routes', () => {
     describe('GET /api/auth/me', () => {
         it('should return 200 and user profile', async () => {
             const mockUser = { id: 'user_id', email: 'test@test.com' };
-            userServiceMockInstance.getMe.mockResolvedValue(mockUser);
+            (userServiceMockInstance.getMe as jest.Mock).mockResolvedValue(mockUser);
 
             const res = await request(app).get('/api/auth/me');
 
@@ -125,7 +144,7 @@ describe('Auth Routes', () => {
         });
 
         it('should return 404 if user not found', async () => {
-            userServiceMockInstance.getMe.mockRejectedValue(new Error('User not found'));
+            (userServiceMockInstance.getMe as jest.Mock).mockRejectedValue(new Error('User not found'));
             const res = await request(app).get('/api/auth/me');
             expect(res.status).toBe(404);
             expect(res.body.message).toBe('User not found');
@@ -135,7 +154,7 @@ describe('Auth Routes', () => {
     describe('POST /api/auth/google', () => {
         it('should return 200 and token on success', async () => {
             const mockResponse = { token: 'gtoken', user: {} };
-            userServiceMockInstance.googleLogin.mockResolvedValue(mockResponse);
+            (userServiceMockInstance.googleLogin as jest.Mock).mockResolvedValue(mockResponse);
 
             const res = await request(app)
                 .post('/api/auth/google')
