@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 const Login = () => {
   const { isAuthenticated, loading, googleLogin } = useAuth();
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader fullScreen />;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (

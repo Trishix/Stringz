@@ -38,7 +38,7 @@ const AdminDashboard = () => {
         setUsers(users.filter(u => u._id !== userId));
     };
 
-    if (loading) return <div className="min-h-screen pt-20 bg-gray-900"><Loader /></div>;
+    if (loading) return <Loader fullScreen />;
 
     return (
         <div className="min-h-screen bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8">

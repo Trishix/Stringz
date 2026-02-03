@@ -37,7 +37,7 @@ const LessonDetail = () => {
         fetchData();
     }, [id, isAuthenticated]);
 
-    if (loading) return <div className="min-h-screen pt-20"><Loader /></div>;
+    if (loading) return <Loader fullScreen />;
     if (!lesson) return <div className="min-h-screen text-center pt-32 text-white">Lesson not found</div>;
 
     return (

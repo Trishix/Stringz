@@ -37,7 +37,7 @@ const VideoPlayerPage = () => {
         init();
     }, [id]);
 
-    if (loading) return <div className="h-screen bg-gray-900 text-white pt-20"><Loader /></div>;
+    if (loading) return <Loader fullScreen />;
 
     if (error) return (
         <div className="h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
