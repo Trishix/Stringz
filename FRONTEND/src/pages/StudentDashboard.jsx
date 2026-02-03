@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import paymentService from '../services/paymentService';
 import LessonGrid from '../components/lessons/LessonGrid';
 import Loader from '../components/common/Loader';
@@ -81,6 +82,14 @@ const StudentDashboard = () => {
                     lessons={purchases}
                     loading={loading}
                     emptyMessage="You haven't purchased any lessons yet."
+                    emptyAction={
+                        <Link
+                            to="/lessons"
+                            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200"
+                        >
+                            Explore Lessons
+                        </Link>
+                    }
                     purchased={true}
                 />
             </div>

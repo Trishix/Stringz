@@ -1,7 +1,7 @@
 import LessonCard from './LessonCard';
 import Loader from '../common/Loader';
 
-const LessonGrid = ({ lessons, loading, emptyMessage = "No lessons found.", purchased = false }) => {
+const LessonGrid = ({ lessons, loading, emptyMessage = "No lessons found.", emptyAction, purchased = false }) => {
     if (loading) {
         return <div className="py-20"><Loader /></div>;
     }
@@ -10,6 +10,7 @@ const LessonGrid = ({ lessons, loading, emptyMessage = "No lessons found.", purc
         return (
             <div className="py-20 text-center text-gray-400">
                 <p className="text-xl">{emptyMessage}</p>
+                {emptyAction && <div className="mt-4">{emptyAction}</div>}
             </div>
         );
     }
