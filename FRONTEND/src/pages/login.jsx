@@ -7,10 +7,12 @@ import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
 
 const Login = () => {
-  const { isAuthenticated, loading, googleLogin } = useAuth();
+  const { isAuthenticated, loading, googleLogin, isAdmin } = useAuth();
 
   if (loading) return <Loader fullScreen />;
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) {
+    return <Navigate to={isAdmin ? "/admin" : "/dashboard"} replace />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

@@ -6,7 +6,7 @@ import {
     useMotionValueEvent,
 } from "framer-motion";
 import { cn } from "../../lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from '../../assets/images/logo.png';
 import { useAuth } from "../../context/AuthContext";
 import { LogOut } from "lucide-react";
@@ -18,6 +18,7 @@ export const FloatingNav = ({
     const { scrollYProgress } = useScroll();
     const [visible, setVisible] = useState(true);
     const { user, logout, isAuthenticated } = useAuth();
+    const location = useLocation();
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
         // Check if current is not undefined and is a number
@@ -60,17 +61,27 @@ export const FloatingNav = ({
                     <img src={logo} alt="Stringz" className="h-8 w-auto object-contain" />
                 </Link>
 
-                {navItems.map((navItem, idx) => (
-                    <Link
-                        key={`link=${idx}`}
-                        to={navItem.link}
-                        className={cn(
-                            "relative dark:text-neutral-50 items-center flex space-x-1 text-gray-300 hover:text-purple-400 transition-colors"
-                        )}>
-                        <span className="block sm:hidden">{navItem.icon}</span>
-                        <span className="hidden sm:block text-sm font-medium">{navItem.name}</span>
-                    </Link>
-                ))}
+                {navItems.map((navItem, idx) => {
+                    const isActive = location.pathname === navItem.link || (navItem.link !== '/' && location.pathname.startsWith(navItem.link));
+                    return (
+                        <Link
+                            key={`link=${idx}`}
+                            to={navItem.link}
+                            className={cn(
+                                "relative items-center flex space-x-1 transition-colors",
+                                isActive
+                                    ? "text-purple-400 dark:text-purple-400 font-semibold"
+                                    : "text-gray-300 hover:text-purple-400 dark:text-neutral-50"
+                            )}
+                        >
+                            <span className="block sm:hidden">{navItem.icon}</span>
+                            <span className="hidden sm:block text-sm font-medium">{navItem.name}</span>
+                            {isActive && (
+                                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent rounded-full" />
+                            )}
+                        </Link>
+                    );
+                })}
 
                 {isAuthenticated ? (
                     <button
