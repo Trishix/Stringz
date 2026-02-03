@@ -20,28 +20,31 @@
   }
 }
 
-/* Custom Loader */
-.loader {
-  width: 120px;
-  height: 22px;
-  border-radius: 20px;
-  color: inherit;
-  border: 2px solid;
-  position: relative;
-}
+@layer components {
 
-.loader::before {
-  content: "";
-  position: absolute;
-  margin: 2px;
-  inset: 0 100% 0 0;
-  border-radius: inherit;
-  background: currentColor;
-  animation: l6 2s infinite;
-}
+  /* Custom Loader */
+  .loader {
+    width: 120px;
+    height: 22px;
+    border-radius: 20px;
+    color: inherit;
+    border: 2px solid;
+    position: relative;
+  }
 
-@keyframes l6 {
-  100% {
-    inset: 0
+  .loader::before {
+    content: "";
+    position: absolute;
+    margin: 2px;
+    inset: 0 100% 0 0;
+    border-radius: inherit;
+    background: currentColor;
+    animation: l6 2s infinite;
+  }
+
+  @keyframes l6 {
+    100% {
+      inset: 0
+    }
   }
 }
