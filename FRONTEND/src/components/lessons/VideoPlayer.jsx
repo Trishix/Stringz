@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, RotateCcw, RotateCw } from 'lucide-react';
 
 const VideoPlayer = ({ src, poster, onHeartbeat }) => {
     const videoRef = useRef(null);
@@ -9,6 +9,8 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
 
     let controlsTimeout;
 
@@ -28,6 +30,13 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
         return () => clearInterval(interval);
     }, [isPlaying]);
 
+    const formatTime = (time) => {
+        if (isNaN(time)) return "00:00";
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
     const togglePlay = () => {
         if (videoRef.current) {
             if (isPlaying) {
@@ -39,11 +48,19 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
         }
     };
 
+    const skip = (seconds) => {
+        if (videoRef.current) {
+            videoRef.current.currentTime += seconds;
+        }
+    };
+
     const handleTimeUpdate = () => {
         if (videoRef.current) {
             const current = videoRef.current.currentTime;
-            const duration = videoRef.current.duration;
-            setProgress((current / duration) * 100);
+            const dur = videoRef.current.duration;
+            setCurrentTime(current);
+            setDuration(dur);
+            setProgress((current / dur) * 100);
         }
     };
 
@@ -102,6 +119,7 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
                 className="w-full h-full object-contain"
                 onTimeUpdate={handleTimeUpdate}
                 onClick={togglePlay}
+                onLoadedMetadata={(e) => setDuration(e.target.duration)}
             />
 
             {/* Overlay - Play Button */}
@@ -116,20 +134,33 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
             {/* Controls Bar */}
             <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Progress Bar */}
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={progress}
-                    onChange={handleSeek}
-                    className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer mb-4 accent-purple-500 hover:h-2 transition-all"
-                />
+                <div className="flex items-center gap-4 mb-2">
+                    <span className="text-white text-xs font-mono">{formatTime(currentTime)}</span>
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={progress}
+                        onChange={handleSeek}
+                        className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:h-2 transition-all"
+                    />
+                    <span className="text-white text-xs font-mono">{formatTime(duration)}</span>
+                </div>
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <button onClick={togglePlay} className="text-white hover:text-purple-400 transition-colors">
-                            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button onClick={togglePlay} className="text-white hover:text-purple-400 transition-colors">
+                                {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                            </button>
+
+                            <button onClick={() => skip(-10)} className="text-white hover:text-purple-400 transition-colors" title="-10s">
+                                <RotateCcw size={20} />
+                            </button>
+                            <button onClick={() => skip(10)} className="text-white hover:text-purple-400 transition-colors" title="+10s">
+                                <RotateCw size={20} />
+                            </button>
+                        </div>
 
                         <div className="flex items-center gap-2 group/volume">
                             <button onClick={toggleMute} className="text-white hover:text-purple-400 transition-colors">
