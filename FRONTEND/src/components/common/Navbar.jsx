@@ -24,11 +24,11 @@ const Navbar = () => {
             link: "/contact",
             icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
         });
-        navItems.push({
-            name: "About",
-            link: "/about",
-            icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
-        });
+        // navItems.push({
+        //     name: "About",
+        //     link: "/about",
+        //     icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
+        // });
     }
 
     if (isAuthenticated) {
