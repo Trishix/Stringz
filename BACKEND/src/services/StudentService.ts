@@ -21,7 +21,7 @@ export class StudentService {
 
     async getDashboard(userId: string) {
         // 1. Handle Daily Activity & Coins
-        const user = await this.userRepository.findById(userId);
+        const user = await this.userRepository.findOne(userId);
         if (user) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
