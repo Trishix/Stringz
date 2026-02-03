@@ -46,4 +46,25 @@ export class StudentController extends BaseController {
             return this.fail(res, error);
         }
     }
+
+    public updateProgress = async (req: Request, res: Response) => {
+        try {
+            if (!req.user || !req.user.id) {
+                return this.unauthorized(res, 'User not authenticated');
+            }
+            const { lessonId, duration, position } = req.body;
+
+            if (!lessonId) return this.clientError(res, 'Lesson ID is required');
+
+            const result = await this.studentService.updateProgress(
+                req.user.id,
+                lessonId,
+                duration || 0,
+                position || 0
+            );
+            return this.ok(res, result);
+        } catch (error: any) {
+            return this.fail(res, error);
+        }
+    }
 }

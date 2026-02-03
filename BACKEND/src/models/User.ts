@@ -9,6 +9,8 @@ export interface IUser extends Document {
     avatar?: string;
     role: 'student' | 'admin';
     purchases: mongoose.Types.ObjectId[];
+    activeDates: Date[];
+    coins: number;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(enteredPassword: string): Promise<boolean>;
@@ -56,6 +58,14 @@ const UserSchema: Schema = new Schema(
             type: String,
             enum: ['student', 'admin'],
             default: 'student',
+        },
+        activeDates: {
+            type: [Date],
+            default: [],
+        },
+        coins: {
+            type: Number,
+            default: 0,
         },
         purchases: [
             {

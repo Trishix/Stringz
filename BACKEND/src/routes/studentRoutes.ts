@@ -8,5 +8,6 @@ const studentController = new StudentController();
 router.get('/purchases', auth, studentController.getPurchases);
 router.get('/dashboard', auth, studentController.getDashboard);
 router.get('/check-access/:lessonId', auth, studentController.checkAccess);
+router.post('/progress', auth, studentController.updateProgress);
 
 export default router;

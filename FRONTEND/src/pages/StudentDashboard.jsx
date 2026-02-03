@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import paymentService from '../services/paymentService';
 import LessonGrid from '../components/lessons/LessonGrid';
 import Loader from '../components/common/Loader';
+import ActivityHeatmap from '../components/dashboard/ActivityHeatmap';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, DollarSign, Clock } from 'lucide-react';
+import { BookOpen, DollarSign, Clock, Flame, Coins } from 'lucide-react';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -43,7 +44,7 @@ const StudentDashboard = () => {
 
                 {/* Stats Cards */}
                 {stats && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
                             <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400">
                                 <BookOpen size={24} />
@@ -55,27 +56,40 @@ const StudentDashboard = () => {
                         </div>
 
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
-                            <div className="p-3 bg-green-500/20 rounded-lg text-green-400">
-                                <DollarSign size={24} />
-                            </div>
-                            <div>
-                                <p className="text-gray-400 text-sm">Total Invested</p>
-                                <p className="text-2xl font-bold">₹{stats.totalSpent}</p>
-                            </div>
-                        </div>
-
-                        <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
                             <div className="p-3 bg-blue-500/20 rounded-lg text-blue-400">
                                 <Clock size={24} />
                             </div>
                             <div>
                                 <p className="text-gray-400 text-sm">Learning Time</p>
-                                <p className="text-2xl font-bold">-- hrs</p>
-                                {/* Note: Learning time tracking was low priority, leaving placeholder */}
+                                <p className="text-2xl font-bold">{stats.totalLearningTime || 0} hrs</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
+                            <div className="p-3 bg-orange-500/20 rounded-lg text-orange-400">
+                                <Flame size={24} />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Day Streak</p>
+                                <p className="text-2xl font-bold">{stats.streak || 0}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
+                            <div className="p-3 bg-yellow-500/20 rounded-lg text-yellow-400">
+                                <Coins size={24} />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Coins</p>
+                                <p className="text-2xl font-bold">{stats.coins || 0}</p>
                             </div>
                         </div>
                     </div>
                 )}
+
+                <div className="mb-12">
+                    <ActivityHeatmap activeDates={stats?.activeDates} />
+                </div>
 
                 <h2 className="text-2xl font-bold mb-6">Your Courses</h2>
                 <LessonGrid

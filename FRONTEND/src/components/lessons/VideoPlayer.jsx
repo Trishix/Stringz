@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
 
-const VideoPlayer = ({ src, poster }) => {
+const VideoPlayer = ({ src, poster, onHeartbeat }) => {
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -11,6 +11,22 @@ const VideoPlayer = ({ src, poster }) => {
     const [showControls, setShowControls] = useState(true);
 
     let controlsTimeout;
+
+    // Heartbeat for tracking
+    useEffect(() => {
+        let interval;
+        if (isPlaying) {
+            interval = setInterval(() => {
+                if (videoRef.current && onHeartbeat) {
+                    onHeartbeat({
+                        duration: 10,
+                        position: videoRef.current.currentTime
+                    });
+                }
+            }, 10000);
+        }
+        return () => clearInterval(interval);
+    }, [isPlaying]);
 
     const togglePlay = () => {
         if (videoRef.current) {

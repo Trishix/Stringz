@@ -83,7 +83,17 @@ const VideoPlayerPage = () => {
                     <p className="text-gray-400">Instructor: {lesson.instructor}</p>
                 </div>
 
-                <VideoPlayer src={lesson.videoUrl} poster={lesson.thumbnailUrl} />
+                <VideoPlayer
+                    src={lesson.videoUrl}
+                    poster={lesson.thumbnailUrl}
+                    onHeartbeat={async (data) => {
+                        try {
+                            await paymentService.updateProgress(id, data.duration, data.position);
+                        } catch (err) {
+                            console.error("Failed to update progress", err);
+                        }
+                    }}
+                />
 
                 <div className="mt-8 bg-gray-800/50 p-6 rounded-xl border border-white/5">
                     <h3 className="text-xl font-semibold mb-3">Description</h3>

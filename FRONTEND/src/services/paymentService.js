@@ -24,6 +24,11 @@ const paymentService = {
     checkAccess: async (lessonId) => {
         const response = await api.get(`/student/check-access/${lessonId}`);
         return response.data;
+    },
+
+    updateProgress: async (lessonId, duration, position) => {
+        const response = await api.post('/student/progress', { lessonId, duration, position });
+        return response.data;
     }
 };
 
