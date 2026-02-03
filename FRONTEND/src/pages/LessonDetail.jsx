@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import lessonService from '../services/lessonService';
 import paymentService from '../services/paymentService';
 import Loader from '../components/common/Loader';
@@ -33,6 +34,7 @@ const LessonDetail = () => {
                 }
             } catch (error) {
                 console.error("Failed to load lesson", error);
+                toast.error("Failed to load lesson details");
             } finally {
                 setLoading(false);
             }

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { CONFIG } from '../constants/config';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://stringz.onrender.com/api',
+    baseURL: CONFIG.API_URL,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -29,9 +30,8 @@ api.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             // Clear local storage and redirect to login if 401
-            //   localStorage.removeItem('token');
-            //   window.location.href = '/login';
-            // Let AuthContext handle this mostly, but good safeguard
+            localStorage.removeItem('token');
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

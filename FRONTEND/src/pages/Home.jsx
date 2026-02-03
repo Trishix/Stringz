@@ -22,7 +22,7 @@ const Home = () => {
                         Premium video courses from world-class instructors. Learn at your own pace and take your skills to the next level.
                     </p>
                     <div className="mt-10 flex justify-start gap-4">
-                        <Link to="/lessons" className="inline-flex items-center px-8 py-3 border border-white/20 text-base font-medium rounded-full text-white bg-purple-600/30 hover:bg-purple-600/50 backdrop-blur-md shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]">
+                        <Link to="/lessons" className="inline-flex items-center px-8 py-3 border border-white/20 text-base font-medium rounded-full text-white bg-purple-600/30 hover:bg-purple-600/50 backdrop-blur-md shadow-glow-purple transition-all hover:scale-105 shadow-glow-purple-hover">
                             <Play className="w-5 h-5 mr-2" fill="currentColor" /> Browse Lessons
                         </Link>
                         <Link to="/signup" className="inline-flex items-center px-8 py-3 border border-white/20 text-base font-medium rounded-full text-white bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-lg transition-all hover:scale-105">

@@ -38,7 +38,7 @@ export const FloatingNav = ({
 
     return (
         <AnimatePresence mode="wait">
-            <motion.div
+            <motion.nav
                 initial={{
                     opacity: 1,
                     y: -100,
@@ -51,7 +51,7 @@ export const FloatingNav = ({
                     duration: 0.2,
                 }}
                 className={cn(
-                    "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-purple-500/20 rounded-full bg-gray-900/80 backdrop-blur-md shadow-[0_0_20px_rgba(147,51,234,0.15)] z-[5000] pr-2 pl-8 py-2 items-center justify-center space-x-4",
+                    "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-purple-500/20 rounded-full bg-gray-900/80 backdrop-blur-md shadow-glow-purple-subtle z-50 pr-2 pl-8 py-2 items-center justify-center space-x-4",
                     className
                 )}>
 
@@ -90,7 +90,7 @@ export const FloatingNav = ({
                         </button>
                     </Link>
                 )}
-            </motion.div>
+            </motion.nav>
         </AnimatePresence>
     );
 };

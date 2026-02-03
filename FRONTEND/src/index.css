@@ -5,3 +5,17 @@
     scroll-behavior: smooth;
   }
 }
+
+@layer utilities {
+  .shadow-glow-purple {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+  }
+
+  .shadow-glow-purple-hover:hover {
+    box-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+  }
+
+  .shadow-glow-purple-subtle {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.15);
+  }
+}

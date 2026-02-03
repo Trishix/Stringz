@@ -2,14 +2,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes/AppRoutes';
-
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { CONFIG } from './constants/config';
 
 function App() {
-  console.log("Current Client ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+
   return (
     <BrowserRouter>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+      <GoogleOAuthProvider clientId={CONFIG.GOOGLE_CLIENT_ID}>
         <AuthProvider>
           <AppRoutes />
           <Toaster

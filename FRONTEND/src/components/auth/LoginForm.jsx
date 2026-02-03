@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { Mail, Lock, Loader as LoaderIcon } from 'lucide-react';
 
 const LoginForm = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm({ mode: 'onBlur' });
     const { login } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -71,7 +71,7 @@ const LoginForm = () => {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2.5 px-4 border border-purple-500/30 rounded-lg shadow-[0_0_20px_rgba(147,51,234,0.3)] text-sm font-medium text-white bg-purple-600/20 hover:bg-purple-600/40 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
+                className="w-full flex justify-center py-2.5 px-4 border border-purple-500/30 rounded-lg shadow-glow-purple text-sm font-medium text-white bg-purple-600/20 hover:bg-purple-600/40 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
             >
                 {isLoading ? <LoaderIcon className="animate-spin h-5 w-5" /> : 'Sign In'}
             </button>
