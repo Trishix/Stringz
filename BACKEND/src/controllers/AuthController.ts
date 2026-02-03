@@ -24,10 +24,13 @@ export class AuthController extends BaseController {
 
     public login = async (req: Request, res: Response) => {
         try {
+            console.log('Login request:', req.body.email);
             const { email, password } = req.body;
             const result = await this.userService.login(email, password);
+            console.log('Login success');
             return this.ok(res, result);
         } catch (error: any) {
+            console.error('Login error:', error.message);
             if (error.message === 'Invalid credentials') {
                 return this.clientError(res, error.message);
             }
@@ -42,6 +45,7 @@ export class AuthController extends BaseController {
             const user = await this.userService.getMe(userId);
             return this.ok(res, user);
         } catch (error: any) {
+            console.error('GetMe error:', error.message);
             if (error.message === 'User not found') {
                 return this.notFound(res, error.message);
             }
@@ -51,10 +55,13 @@ export class AuthController extends BaseController {
 
     public googleLogin = async (req: Request, res: Response) => {
         try {
+            console.log('Google login request');
             const { token } = req.body;
             const result = await this.userService.googleLogin(token);
+            console.log('Google login success');
             return this.ok(res, result);
         } catch (error) {
+            console.error('Google login error:', error);
             return this.fail(res, error as Error);
         }
     }
