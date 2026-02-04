@@ -8,7 +8,7 @@ const Home = () => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-white">
             {/* Hero Section */}
-            <section className="relative px-4 pt-20 pb-16 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-gray-900 to-indigo-900 overflow-hidden min-h-screen flex items-center">
+            <section className="relative px-4 pt-32 pb-16 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-gray-900 to-indigo-900 overflow-hidden min-h-screen flex items-center">
                 <div
                     className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay"
                     style={{ backgroundImage: `url(${heroImage})` }}

@@ -50,7 +50,7 @@ const Catalog = () => {
     }, [filters, pagination.page, setSearchParams]);
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-900 text-white pt-32 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
                     Explore Our Catalogue
