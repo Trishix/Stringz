@@ -4,6 +4,17 @@ import lessonService from '../services/lessonService';
 import LessonForm from '../components/admin/LessonForm';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "../components/ui/alert-dialog";
 
 const AdminLessons = () => {
     const [lessons, setLessons] = useState([]);
@@ -29,14 +40,12 @@ const AdminLessons = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this lesson?")) {
-            try {
-                await lessonService.deleteLesson(id);
-                setLessons(lessons.filter(l => l._id !== id));
-                toast.success("Lesson deleted");
-            } catch {
-                toast.error("Failed to delete lesson");
-            }
+        try {
+            await lessonService.deleteLesson(id);
+            setLessons(lessons.filter(l => l._id !== id));
+            toast.success("Lesson deleted");
+        } catch {
+            toast.error("Failed to delete lesson");
         }
     }
 
@@ -129,12 +138,29 @@ const AdminLessons = () => {
                                             >
                                                 <Edit2 size={18} />
                                             </button>
-                                            <button
-                                                onClick={() => handleDelete(lesson._id)}
-                                                className="text-red-400 hover:text-red-300"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <button className="text-red-400 hover:text-red-300">
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete the lesson
+                                                            and remove it from our servers.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDelete(lesson._id)}>
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </td>
                                     </tr>
                                 ))}

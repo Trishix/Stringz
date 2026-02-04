@@ -2,22 +2,31 @@ import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const UserTable = ({ users, onDelete }) => {
     const [deletingId, setDeletingId] = useState(null);
 
     const handleDelete = async (userId) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
-            setDeletingId(userId);
-            try {
-                await api.delete(`/admin/users/${userId}`);
-                toast.success('User deleted');
-                onDelete(userId);
-            } catch {
-                toast.error('Failed to delete user');
-            } finally {
-                setDeletingId(null);
-            }
+        setDeletingId(userId);
+        try {
+            await api.delete(`/admin/users/${userId}`);
+            toast.success('User deleted');
+            onDelete(userId);
+        } catch {
+            toast.error('Failed to delete user');
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -57,14 +66,31 @@ const UserTable = ({ users, onDelete }) => {
                                     {new Date(user.createdAt).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    {user.role !== 'admin' && ( // Don't allow deleting admins for safety in this demo
-                                        <button
-                                            onClick={() => handleDelete(user._id)}
-                                            disabled={deletingId === user._id}
-                                            className="text-red-400 hover:text-red-300 disabled:opacity-50"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                    {user.role !== 'admin' && ( // Don't allow deleting admins
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <button
+                                                    disabled={deletingId === user._id}
+                                                    className="text-red-400 hover:text-red-300 disabled:opacity-50"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Delete User?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Are you sure you want to delete <b>{user.name}</b>? This action cannot be undone.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDelete(user._id)}>
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     )}
                                 </td>
                             </tr>

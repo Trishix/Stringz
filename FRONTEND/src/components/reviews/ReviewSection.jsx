@@ -4,6 +4,17 @@ import reviewService from '../../services/reviewService';
 import ReviewForm from './ReviewForm';
 import { Star, Trash2, Edit2, User } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ReviewSection = ({ lessonId }) => {
     const [reviews, setReviews] = useState([]);
@@ -52,7 +63,6 @@ const ReviewSection = ({ lessonId }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Delete this review?")) return;
         try {
             await reviewService.deleteReview(id);
             setReviews(reviews.filter(r => r._id !== id));
@@ -120,12 +130,29 @@ const ReviewSection = ({ lessonId }) => {
                                             <Edit2 size={14} /> Edit
                                         </button>
                                     )}
-                                    <button
-                                        onClick={() => handleDelete(review._id)}
-                                        className="flex items-center gap-1 text-red-400 hover:text-red-300 transition-colors"
-                                    >
-                                        <Trash2 size={14} /> Delete
-                                    </button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <button
+                                                className="flex items-center gap-1 text-red-400 hover:text-red-300 transition-colors"
+                                            >
+                                                <Trash2 size={14} /> Delete
+                                            </button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Delete Review?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to delete this review? This action cannot be undone.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDelete(review._id)}>
+                                                    Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </div>
                             )}
                         </div>
