@@ -29,7 +29,7 @@ const AppRoutes = () => {
     const isWatchPage = location.pathname.includes('/watch');
 
     if (loading) {
-        return <Loader fullScreen />;
+        return <Loader fullScreen waitMessage="Waiting for database to start..." />;
     }
 
     return (
