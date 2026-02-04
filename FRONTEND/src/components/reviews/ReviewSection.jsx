@@ -57,7 +57,7 @@ const ReviewSection = ({ lessonId }) => {
             await reviewService.deleteReview(id);
             setReviews(reviews.filter(r => r._id !== id));
             toast.success("Review deleted");
-        } catch (error) {
+        } catch {
             toast.error("Failed to delete review");
         }
     };
