@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:4000/api
     description: Local server
-  - url: https://stringz-backend.onrender.com/api
+  - url: https://stringz.onrender.com/api
     description: Production server
 tags:
   - name: Auth
