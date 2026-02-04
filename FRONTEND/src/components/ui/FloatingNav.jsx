@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+    // eslint-disable-next-line no-unused-vars
+    motion,
     AnimatePresence,
     useScroll,
     useMotionValueEvent,
