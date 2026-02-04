@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import Loader from '../components/common/Loader';
@@ -22,9 +22,12 @@ const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const AdminLessons = lazy(() => import('../pages/AdminLessons'));
 
 const AppRoutes = () => {
+    const location = useLocation();
+    const isWatchPage = location.pathname.includes('/watch');
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-            <Navbar />
+            {!isWatchPage && <Navbar />}
             <main className="flex-grow">
                 <Suspense fallback={<Loader fullScreen />}>
                     <Routes>

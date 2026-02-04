@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import lessonService from '../services/lessonService';
 import paymentService from '../services/paymentService';
+import studentService from '../services/studentService';
 import VideoPlayer from '../components/lessons/VideoPlayer';
+import CommentsSection from '../components/common/CommentsSection';
 import Loader from '../components/common/Loader';
 import { ArrowLeft, Lock, Clock, Calendar, Star, Globe } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -82,7 +84,7 @@ const VideoPlayerPage = () => {
                         poster={lesson.thumbnailUrl}
                         onHeartbeat={async (data) => {
                             try {
-                                await paymentService.updateProgress(id, data.duration, data.position);
+                                await studentService.updateProgress(id, data.duration, data.position);
                             } catch (err) {
                                 console.error("Failed to update progress", err);
                             }
@@ -100,8 +102,8 @@ const VideoPlayerPage = () => {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase ${lesson.category === 'beginner' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                                        lesson.category === 'intermediate' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
-                                            'bg-red-500/10 text-red-400 border border-red-500/20'
+                                    lesson.category === 'intermediate' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
+                                        'bg-red-500/10 text-red-400 border border-red-500/20'
                                     }`}>
                                     {lesson.category}
                                 </span>
@@ -127,11 +129,18 @@ const VideoPlayerPage = () => {
                             </div>
                         </div>
 
+                        {/* ... (in grid) */}
+
                         <div className="prose prose-invert prose-lg max-w-none">
                             <h3 className="text-2xl font-bold text-white mb-4">About this lesson</h3>
                             <div className="text-gray-300 leading-relaxed whitespace-pre-wrap text-lg">
                                 {lesson.description}
                             </div>
+                        </div>
+
+                        {/* Comments Section */}
+                        <div className="pt-8 border-t border-white/5">
+                            <CommentsSection lessonId={id} />
                         </div>
                     </div>
 

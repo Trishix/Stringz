@@ -2,136 +2,123 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 const ActivityHeatmap = ({ activeDates = [] }) => {
-    // Helper to get days in a month
-    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-
-    // Group dates by month for the last year
-    const monthsData = useMemo(() => {
+    // Generate last 365 days data for continuous grid
+    const { weeks, monthLabels } = useMemo(() => {
         const today = new Date();
-        const months = [];
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - 365);
 
-        // We want to show roughly the last 12 months. 
-        // Let's iterate backwards 11 months from current + current month = 12 months.
-        for (let i = 11; i >= 0; i--) {
-            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-            const year = d.getFullYear();
-            const monthIndex = d.getMonth(); // 0-11
-            const monthName = d.toLocaleString('default', { month: 'short' });
-            const daysInMonth = getDaysInMonth(year, monthIndex);
+        // Adjust start date to previous Sunday to align grid
+        const dayOfWeek = startDate.getDay();
+        const alignedStartDate = new Date(startDate);
+        alignedStartDate.setDate(startDate.getDate() - dayOfWeek);
 
-            // Generate weeks for this specific month
-            const weeks = [];
-            let currentWeek = Array(7).fill(null); // filled with null initially
+        const weeksArr = [];
+        const monthLabelsArr = [];
+        let currentMonth = -1;
 
-            // Fill initial empty days if month doesn't start on Sunday
-            // getDay(): 0 = Sunday, 1 = Monday...
-            const startDay = new Date(year, monthIndex, 1).getDay();
+        // Iterate week by week
+        const currentDate = new Date(alignedStartDate);
 
-            // Determine active status for each day
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateObj = new Date(year, monthIndex, day);
-                const dayOfWeek = dateObj.getDay();
+        // We need 53 weeks to cover a full year safely
+        for (let w = 0; w < 53; w++) {
+            const weekData = [];
 
-                // If it's a new week (and not the very first iteration where startDay might be > 0), push old week and reset
-                // But specifically for the grid logic:
-                // We just place 'day' at 'dayOfWeek'. 
-                // If dayOfWeek is 0 (Sunday) and we have data in currentWeek, implies new row??
-                // Actually typical heatmap columns are WEEKS (vertical). Rows are DAYS (horizontal).
-                // Wait, standard contribution graph:
-                // Columns = Weeks.
-                // Rows = Days (Sun, Mon, Tue...).
-                // So day 1 (say Wed) goes to Column 0, Row 3.
-                // day 2 (Thu) goes to Column 0, Row 4.
-
-                // We need to build COLUMNS.
-                // Algorithm:
-                // 1. Calculate which "Week Index" of the month this day belongs to.
-                // Week 0: days before first Saturday...
-                // Actually simpler: Just push days into a flat array of "slots" for the month, allowing for offsets.
-
-                // Let's assume standard Column-first flow (Weeks are columns).
-                // Column 0: may have empty slots at top.
+            // Check month of the first day of this week to determine label placement
+            const firstDayOfMonth = currentDate.getMonth();
+            if (firstDayOfMonth !== currentMonth) {
+                // Determine label position (approximate centered above the month's start)
+                monthLabelsArr.push({
+                    name: currentDate.toLocaleString('default', { month: 'short' }),
+                    x: w * 12 // 10px box + 2px gap = 12px
+                });
+                currentMonth = firstDayOfMonth;
             }
 
-            // REVISED ALGORITHM for Column-based Month view
-            const totalSlots = startDay + daysInMonth;
-            const numWeeks = Math.ceil(totalSlots / 7);
+            for (let d = 0; d < 7; d++) {
+                // If date is in future relative to "today" (real today), we treat it as empty or future slot
+                const validDate = new Date(currentDate);
+                // In LeetCode, future days are just empty slots
+                // We render them
+                weekData.push({ date: validDate, offset: d });
 
-            const monthWeeks = [];
-            for (let w = 0; w < numWeeks; w++) {
-                const weekData = Array(7).fill(null);
-                for (let d = 0; d < 7; d++) {
-                    const dayIndex = (w * 7) + d; // absolute index in the month's grid
-                    const dayNum = dayIndex - startDay + 1;
-
-                    if (dayNum > 0 && dayNum <= daysInMonth) {
-                        weekData[d] = new Date(year, monthIndex, dayNum);
-                    }
-                }
-                monthWeeks.push(weekData);
+                currentDate.setDate(currentDate.getDate() + 1);
             }
-
-            months.push({
-                name: monthName,
-                year,
-                weeks: monthWeeks
-            });
+            weeksArr.push(weekData);
         }
-        return months;
+
+        return { weeks: weeksArr, monthLabels: monthLabelsArr };
     }, []);
 
     const activeSet = useMemo(() => {
         return new Set((activeDates || []).map(d => new Date(d).toDateString()));
     }, [activeDates]);
 
+    // Dimensions
+    const boxSize = 10;
+    const gap = 2; // LeetCode style is tight
+    const width = 53 * (boxSize + gap);
+    const height = 7 * (boxSize + gap) + 20; // +20 for labels
+
     return (
-        <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 w-full overflow-x-auto">
-            <h3 className="text-xl font-semibold mb-4 text-white">Activity History</h3>
-
-            <div className="flex gap-4 min-w-max pb-2">
-                {monthsData.map((month, mIndex) => (
-                    <div key={mIndex} className="flex flex-col gap-2">
-                        {/* Month Label */}
-                        <span className="text-xs text-gray-400 font-medium h-4 block text-center w-full">
-                            {month.name}
-                        </span>
-
-                        {/* Month Grid */}
-                        <div className="flex gap-[3px]">
-                            {month.weeks.map((week, wIndex) => (
-                                <div key={wIndex} className="flex flex-col gap-[3px]">
-                                    {week.map((date, dIndex) => {
-                                        if (!date) {
-                                            // Empty slot (padding for start/end of month)
-                                            return <div key={dIndex} className="w-3 h-3" />;
-                                        }
-
-                                        const isActive = activeSet.has(date.toDateString());
-                                        return (
-                                            <motion.div
-                                                key={dIndex}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ delay: (mIndex * 0.1) + (wIndex * 0.01) }}
-                                                className={`w-3 h-3 rounded-sm ${isActive
-                                                        ? 'bg-purple-500 shadow-glow-purple-subtle'
-                                                        : 'bg-gray-700/30 hover:bg-gray-700'
-                                                    }`}
-                                                title={date.toDateString()}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
+        <div className="bg-[#1e1e1e] p-4 rounded-xl border border-white/10 w-full overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-medium text-gray-200">Submission Calendar</h3>
+                <span className="text-xs text-gray-500">Last 12 Months</span>
             </div>
 
-            <div className="flex items-center justify-end gap-2 mt-4 text-xs text-gray-400">
+            <div className="overflow-x-auto">
+                <svg width={width} height={height} className="mx-auto block">
+                    {/* Month Labels */}
+                    {monthLabels.map((label, i) => (
+                        <text
+                            key={i}
+                            x={label.x}
+                            y={10}
+                            fill="#9CA3AF"
+                            fontSize="10"
+                            fontFamily="monospace"
+                        >
+                            {label.name}
+                        </text>
+                    ))}
+
+                    {/* Grid */}
+                    <g transform="translate(0, 20)">
+                        {weeks.map((week, wIndex) => (
+                            <g key={wIndex} transform={`translate(${wIndex * (boxSize + gap)}, 0)`}>
+                                {week.map((dayObj, dIndex) => {
+                                    const isFuture = dayObj.date > new Date();
+                                    if (isFuture) return null; // Don't render future squares? Or render empty. LeetCode renders empty.
+
+                                    const isActive = activeSet.has(dayObj.date.toDateString());
+                                    // LeetCode Green Scale (approx)
+                                    const fill = isActive ? '#2cbb5d' : '#2d2d2d';
+
+                                    return (
+                                        <rect
+                                            key={dIndex}
+                                            y={dIndex * (boxSize + gap)}
+                                            width={boxSize}
+                                            height={boxSize}
+                                            fill={fill}
+                                            rx={2} // Rounded corners
+                                            className="hover:stroke-white hover:stroke-1 transition-all duration-300"
+                                        >
+                                            <title>{dayObj.date.toDateString()}</title>
+                                        </rect>
+                                    );
+                                })}
+                            </g>
+                        ))}
+                    </g>
+                </svg>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 mt-2 text-[10px] text-gray-500 font-mono">
                 <span>Less</span>
-                <div className="w-3 h-3 bg-gray-700/30 rounded-sm"></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-sm"></div>
+                <div className="w-2.5 h-2.5 bg-[#2d2d2d] rounded-[2px]" />
+                <div className="w-2.5 h-2.5 bg-[#2cbb5d] rounded-[2px]" />
                 <span>More</span>
             </div>
         </div>
