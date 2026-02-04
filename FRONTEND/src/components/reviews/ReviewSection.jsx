@@ -17,18 +17,18 @@ const ReviewSection = ({ lessonId }) => {
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     };
 
-    const fetchReviews = async () => {
-        try {
-            const data = await reviewService.getLessonReviews(lessonId);
-            setReviews(data);
-        } catch (error) {
-            console.error("Failed to load reviews");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const data = await reviewService.getLessonReviews(lessonId);
+                setReviews(data);
+            } catch (error) {
+                console.error("Failed to load reviews", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchReviews();
     }, [lessonId]);
 

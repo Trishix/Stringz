@@ -20,25 +20,20 @@ const CommentsSection = ({ lessonId }) => {
     const [newComment, setNewComment] = useState('');
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
-    const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const data = await reviewService.getReviews(lessonId);
+                setReviews(data);
+            } catch (err) {
+                console.error("Failed to fetch reviews", err);
+            }
+        };
+
         fetchReviews();
     }, [lessonId]);
-
-    const fetchReviews = async () => {
-        try {
-            setLoading(true);
-            const data = await reviewService.getReviews(lessonId);
-            setReviews(data);
-        } catch (err) {
-            console.error("Failed to fetch reviews", err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();

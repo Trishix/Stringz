@@ -1,9 +1,9 @@
 import { Users, BookOpen, DollarSign, TrendingUp } from 'lucide-react';
 
-const StatsCard = ({ title, value, icon: Icon, color }) => (
+const StatsCard = ({ title, value, icon: IconComponent, color }) => (
     <div className="bg-gray-800/50 p-6 rounded-xl border border-white/5 flex items-center gap-4">
         <div className={`p-3 rounded-lg ${color}`}>
-            <Icon size={24} />
+            <IconComponent size={24} />
         </div>
         <div>
             <p className="text-gray-400 text-sm">{title}</p>

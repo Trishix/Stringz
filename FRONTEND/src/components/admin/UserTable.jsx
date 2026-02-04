@@ -13,7 +13,7 @@ const UserTable = ({ users, onDelete }) => {
                 await api.delete(`/admin/users/${userId}`);
                 toast.success('User deleted');
                 onDelete(userId);
-            } catch (error) {
+            } catch {
                 toast.error('Failed to delete user');
             } finally {
                 setDeletingId(null);

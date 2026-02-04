@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 
 const ActivityHeatmap = ({ activeDates = [] }) => {
     // Generate last 365 days data for continuous grid

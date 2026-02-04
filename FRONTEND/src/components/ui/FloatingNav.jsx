@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    motion,
     AnimatePresence,
     useScroll,
     useMotionValueEvent,
@@ -17,7 +16,7 @@ export const FloatingNav = ({
 }) => {
     const { scrollYProgress } = useScroll();
     const [visible, setVisible] = useState(true);
-    const { user, logout, isAuthenticated } = useAuth();
+    const { logout, isAuthenticated } = useAuth();
     const location = useLocation();
 
     // Reset visibility when route changes

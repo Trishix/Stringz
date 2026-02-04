@@ -12,7 +12,7 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    let controlsTimeout;
+    const controlsTimeoutRef = useRef(null);
 
     // Heartbeat for tracking
     useEffect(() => {
@@ -28,7 +28,7 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
             }, 10000);
         }
         return () => clearInterval(interval);
-    }, [isPlaying]);
+    }, [isPlaying, onHeartbeat]);
 
     const formatTime = (time) => {
         if (isNaN(time)) return "00:00";
@@ -100,8 +100,8 @@ const VideoPlayer = ({ src, poster, onHeartbeat }) => {
 
     const handleMouseMove = () => {
         setShowControls(true);
-        clearTimeout(controlsTimeout);
-        controlsTimeout = setTimeout(() => {
+        clearTimeout(controlsTimeoutRef.current);
+        controlsTimeoutRef.current = setTimeout(() => {
             if (isPlaying) setShowControls(false);
         }, 3000);
     }
