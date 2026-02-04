@@ -99,5 +99,29 @@ npm run dev
 
 ---
 
+## 🧪 Testing
+
+The project is equipped with unit and integration tests for both frontend and backend.
+
+### Backend Tests
+Run the comprehensive backend test suite (StudentService, ReviewService, etc.):
+```bash
+cd BACKEND
+npm test
+```
+
+### Frontend Tests
+Run component tests:
+```bash
+cd FRONTEND
+npm test
+```
+
+### CI/CD Pipeline
+- **GitHub Actions**: Automatically lints, builds, and tests both Frontend and Backend on every push to `main`.
+- **Infrastructure**: Backend Dockerfile provided for containerized deployment.
+
+---
+
 
 THANK YOU
