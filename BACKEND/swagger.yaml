@@ -6,40 +6,404 @@ info:
 servers:
   - url: http://localhost:4000/api
     description: Local server
+  - url: https://stringz-backend.onrender.com/api
+    description: Production server
 tags:
   - name: Auth
     description: Authentication endpoints
   - name: Lessons
     description: Lesson management endpoints
+  - name: Student
+    description: Student specific endpoints (Dashboard, Progress)
+  - name: Admin
+    description: Administration endpoints
+  - name: Payment
+    description: Payment processing endpoints
+  - name: Reviews
+    description: Review management endpoints
+  - name: Contact
+    description: Contact form endpoints
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
 paths:
+  # AUTH ROUTES
   /auth/signup:
     post:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Register a new user
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [name, email, password]
               properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
       responses:
-        '201':
-          description: User created
-        '400':
+        201:
+          description: User created successfully
+        400:
           description: Validation error
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        200:
+          description: Login successful
+        401:
+          description: Invalid credentials
+  /auth/google:
+    post:
+      tags: [Auth]
+      summary: Google Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string, description: "Google Credential Token" }
+      responses:
+        200:
+          description: Login/Signup successful
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current logged in user
+      responses:
+        200:
+          description: User details retrieved
+  
+  # LESSON ROUTES
   /lessons:
     get:
-      tags:
-        - Lessons
-      summary: Get all lessons
+      tags: [Lessons]
+      summary: Get all lessons (Paginated, Filtered)
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: sort
+          schema: { type: string }
       responses:
-        '200':
+        200:
           description: List of lessons
+    post:
+      tags: [Lessons]
+      summary: Create a new lesson (Admin only)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title, description, price, category, instructor, duration, video, thumbnail]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                price: { type: number }
+                category: { type: string }
+                instructor: { type: string }
+                duration: { type: number }
+                video: { type: string, format: binary }
+                thumbnail: { type: string, format: binary }
+      responses:
+        201:
+          description: Lesson created
+        403:
+          description: Admin access required
+  /lessons/{id}:
+    get:
+      tags: [Lessons]
+      summary: Get lesson by ID
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Lesson details
+        404:
+          description: Lesson not found
+    put:
+      tags: [Lessons]
+      summary: Update lesson (Admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+                price: { type: number }
+                category: { type: string }
+                instructor: { type: string }
+                duration: { type: number }
+                video: { type: string, format: binary }
+                thumbnail: { type: string, format: binary }
+      responses:
+        200:
+          description: Lesson updated
+    delete:
+      tags: [Lessons]
+      summary: Delete lesson (Admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Lesson deleted
+
+  # STUDENT ROUTES
+  /student/dashboard:
+    get:
+      tags: [Student]
+      summary: Get student dashboard stats
+      responses:
+        200:
+          description: Dashboard stats retrieved
+  /student/purchases:
+    get:
+      tags: [Student]
+      summary: Get purchased lessons
+      responses:
+        200:
+          description: List of purchased lessons
+  /student/check-access/{lessonId}:
+    get:
+      tags: [Student]
+      summary: Check if student has access to a lesson
+      parameters:
+        - in: path
+          name: lessonId
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Access status
+  /student/progress:
+    post:
+      tags: [Student]
+      summary: Update lesson progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lessonId, watchedDuration, lastPosition]
+              properties:
+                lessonId: { type: string }
+                watchedDuration: { type: number }
+                lastPosition: { type: number }
+      responses:
+        200:
+          description: Progress updated
+
+  # PAYMENT ROUTES
+  /payment/create-order:
+    post:
+      tags: [Payment]
+      summary: Create Razorpay Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lessonId]
+              properties:
+                lessonId: { type: string }
+      responses:
+        200:
+          description: Order created
+  /payment/verify:
+    post:
+      tags: [Payment]
+      summary: Verify Razorpay Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpay_order_id, razorpay_payment_id, razorpay_signature]
+              properties:
+                razorpay_order_id: { type: string }
+                razorpay_payment_id: { type: string }
+                razorpay_signature: { type: string }
+      responses:
+        200:
+          description: Payment verified and access granted
+
+  # REVIEW ROUTES
+  /reviews/lesson/{lessonId}:
+    get:
+      tags: [Reviews]
+      summary: Get reviews for a lesson
+      security: []
+      parameters:
+        - in: path
+          name: lessonId
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: List of reviews
+  /reviews:
+    post:
+      tags: [Reviews]
+      summary: Create a review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lessonId, rating, comment]
+              properties:
+                lessonId: { type: string }
+                rating: { type: number, minimum: 1, maximum: 5 }
+                comment: { type: string }
+      responses:
+        201:
+          description: Review created
+  /reviews/{id}:
+    put:
+      tags: [Reviews]
+      summary: Update a review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating: { type: number }
+                comment: { type: string }
+      responses:
+        200:
+          description: Review updated
+    delete:
+      tags: [Reviews]
+      summary: Delete a review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Review deleted
+
+  # CONTACT ROUTES
+  /contact:
+    post:
+      tags: [Contact]
+      summary: Submit contact form
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, message]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                message: { type: string }
+      responses:
+        201:
+          description: Message sent
+    get:
+      tags: [Contact]
+      summary: Get all contact messages
+      security: [] 
+      responses:
+        200:
+          description: List of messages
+
+  # ADMIN ROUTES
+  /admin/stats:
+    get:
+      tags: [Admin]
+      summary: Get admin dashboard stats
+      responses:
+        200:
+          description: Stats retrieved
+  /admin/sales:
+    get:
+      tags: [Admin]
+      summary: Get sales data
+      responses:
+        200:
+          description: Sales data retrieved
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: Get all users
+      responses:
+        200:
+          description: List of users
+  /admin/users/{id}:
+    delete:
+      tags: [Admin]
+      summary: Delete a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: User deleted
