@@ -21,9 +21,16 @@ const VideoPlayerPage = lazy(() => import('../pages/VideoPlayerPage'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const AdminLessons = lazy(() => import('../pages/AdminLessons'));
 
+import { useAuth } from '../context/AuthContext';
+
 const AppRoutes = () => {
     const location = useLocation();
+    const { loading } = useAuth();
     const isWatchPage = location.pathname.includes('/watch');
+
+    if (loading) {
+        return <Loader fullScreen />;
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-white">
