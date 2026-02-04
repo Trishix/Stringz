@@ -39,7 +39,7 @@ const ActivityHeatmap = ({ activeDates = [] }) => {
         while (currentDate <= today) {
             const currentMonth = currentDate.getMonth();
             const currentDayOfWeek = currentDate.getDay(); // 0 = Sun
-            const dom = currentDate.getDate(); // Day of month (1-31)
+
 
             // Logic to advance X position (New Column)
             // 1. If it's the 1st of a new month (distinct visual break)
