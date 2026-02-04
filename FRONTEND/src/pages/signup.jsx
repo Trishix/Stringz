@@ -22,7 +22,7 @@ const Signup = () => {
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="max-w-md w-full space-y-8 bg-gray-800/50 p-8 rounded-2xl backdrop-blur-md border border-white/10 relative z-10 shadow-2xl">
+      <div className="max-w-md w-full space-y-8 bg-gray-800/50 p-6 sm:p-8 rounded-2xl backdrop-blur-md border border-white/10 relative z-10 shadow-2xl">
         <div className="text-center">
           <img src={logo} alt="Stringz" className="h-12 mx-auto mb-6" />
           <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
