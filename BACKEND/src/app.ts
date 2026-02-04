@@ -33,6 +33,9 @@ dotenv.config();
 // Initialize App
 const app = express();
 
+// Trust Proxy (Required for Render/Heroku & Rate Limiting)
+app.set('trust proxy', 1);
+
 // Security Middleware
 app.use(helmet());
 if (process.env.NODE_ENV !== 'test') {
@@ -50,7 +53,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // CORS
-// CORS
+// CORS-
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
