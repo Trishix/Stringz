@@ -5,10 +5,13 @@ import AppRoutes from './routes/AppRoutes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { CONFIG } from './constants/config';
 
+import ScrollToTop from './components/common/ScrollToTop';
+
 function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <GoogleOAuthProvider clientId={CONFIG.GOOGLE_CLIENT_ID}>
         <AuthProvider>
           <AppRoutes />
