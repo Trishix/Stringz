@@ -6,7 +6,7 @@ const AdminRoute = () => {
     const { isAuthenticated, isAdmin, loading } = useAuth();
 
     if (loading) {
-        return <Loader fullScreen />;
+        return <Loader fullScreen waitMessage="Waiting for database to start..." />;
     }
 
     return isAuthenticated && isAdmin ? <Outlet /> : <Navigate to="/dashboard" replace />;

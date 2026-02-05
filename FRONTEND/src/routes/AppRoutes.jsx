@@ -28,9 +28,8 @@ const AppRoutes = () => {
     const { loading } = useAuth();
     const isWatchPage = location.pathname.includes('/watch');
 
-    if (loading) {
-        return <Loader fullScreen waitMessage="Waiting for database to start..." />;
-    }
+    // Global loading check removed to allow public pages to render immediately
+    // Protected routes will handle their own loading state
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-white">

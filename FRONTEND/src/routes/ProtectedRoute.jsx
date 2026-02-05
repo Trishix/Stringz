@@ -6,7 +6,7 @@ const ProtectedRoute = () => {
     const { isAuthenticated, loading } = useAuth();
 
     if (loading) {
-        return <Loader fullScreen />;
+        return <Loader fullScreen waitMessage="Waiting for database to start..." />;
     }
 
     return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
