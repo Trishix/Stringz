@@ -25,6 +25,7 @@ import { useAuth } from '../context/AuthContext';
 
 const AppRoutes = () => {
     const location = useLocation();
+    // eslint-disable-next-line no-unused-vars
     const { loading } = useAuth();
     const isWatchPage = location.pathname.includes('/watch');
 
