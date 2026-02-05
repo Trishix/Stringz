@@ -13,6 +13,7 @@ class RedisService {
         const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
         Logger.info(`Attempting to connect to Redis at: ${redisUrl.includes('@') ? redisUrl.split('@')[1] : redisUrl}`);
         this.redis = new Redis(redisUrl, {
+            lazyConnect: process.env.NODE_ENV === 'test', // Don't auto-connect in tests
             // Retry strategy
             retryStrategy(times) {
                 const delay = Math.min(times * 50, 2000);

@@ -54,7 +54,8 @@ const limiter = rateLimit({
     max: 100, // limit each IP
     standardHeaders: true,
     legacyHeaders: false,
-    store: new RedisStore({
+    // Use Redis in production/dev, Memory in tests to avoid connection errors
+    store: process.env.NODE_ENV === 'test' ? undefined : new RedisStore({
         // @ts-ignore
         sendCommand: (...args: string[]) => redisService.getClient().call(...args),
     }),
