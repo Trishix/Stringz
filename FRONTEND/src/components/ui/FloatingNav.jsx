@@ -18,7 +18,7 @@ export const FloatingNav = ({
 }) => {
     const { scrollYProgress } = useScroll();
     const [visible, setVisible] = useState(true);
-    const { logout, isAuthenticated } = useAuth();
+    const { logout, isAuthenticated, loading } = useAuth();
     const location = useLocation();
 
     // Reset visibility when route changes
@@ -89,7 +89,9 @@ export const FloatingNav = ({
                     );
                 })}
 
-                {isAuthenticated ? (
+                {loading ? (
+                    <div className="h-9 w-20 rounded-full bg-white/10 animate-pulse border border-white/5" />
+                ) : isAuthenticated ? (
                     <button
                         onClick={logout}
                         className="border text-sm font-medium relative border-red-500/30 text-red-400 hover:text-white px-4 py-2 rounded-full bg-red-500/10 hover:bg-red-500/30 backdrop-blur-md transition-all flex items-center gap-2 shadow-[0_0_10px_rgba(239,68,68,0.2)]"
