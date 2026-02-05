@@ -44,13 +44,23 @@ if (process.env.NODE_ENV !== 'test') {
 // xss-clean types are missing, skipping for now until fixed properly or replaced with sanitization middleware
 // app.use(xss()); 
 app.use(hpp());
+import { RedisStore } from 'rate-limit-redis';
+import redisService from './services/RedisService';
 
-// Rate Limiting
+
+// Rate Limiting with Redis
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    max: 100, // limit each IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    store: new RedisStore({
+        // @ts-ignore
+        sendCommand: (...args: string[]) => redisService.getClient().call(...args),
+    }),
 });
 app.use('/api', limiter);
+
 
 // CORS
 // CORS-

@@ -20,6 +20,8 @@ const StudentDashboard = lazy(() => import('../pages/StudentDashboard'));
 const VideoPlayerPage = lazy(() => import('../pages/VideoPlayerPage'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const AdminLessons = lazy(() => import('../pages/AdminLessons'));
+const NotFound = lazy(() => import('../pages/NotFound'));
+
 
 import { useAuth } from '../context/AuthContext';
 
@@ -58,6 +60,10 @@ const AppRoutes = () => {
                             <Route path="/admin" element={<AdminDashboard />} />
                             <Route path="/admin/lessons" element={<AdminLessons />} />
                         </Route>
+
+                        {/* 404 Route */}
+                        <Route path="*" element={<NotFound />} />
+
                     </Routes>
                 </Suspense>
             </main>

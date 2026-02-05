@@ -1,27 +1,20 @@
-# Stage 1: Build
+# Build Stage
 FROM node:18-alpine AS builder
-
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
-
+RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Production
+# Production Stage
 FROM node:18-alpine
-
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install --only=production
-
+RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
-# Copy env if needed, or rely on docker-compose env. 
-# We generally don't copy .env in Dockerfile for security, but for simplicity in some setups it's done. 
-# Better to expect env vars injected.
+# Copy any other necessary files (e.g., swagger.yaml, env example)
+COPY swagger.yaml ./
+COPY .env.example .env.example
 
 EXPOSE 4000
-
 CMD ["npm", "start"]

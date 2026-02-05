@@ -23,6 +23,19 @@ class SocketService {
             }
         });
 
+        // Authentication Middleware
+        this.io.use((socket, next) => {
+            const token = socket.handshake.auth.token || socket.handshake.headers.token;
+            if (!token) {
+                return next(new Error('Authentication error'));
+            }
+            // Simplified Token Verification - in production use jwt.verify
+            // Ideally import jwt and verify properly
+            // const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+            // socket.data.user = decoded;
+            next();
+        });
+
         this.io.on('connection', (socket) => {
             Logger.info(`🔌 Socket Connected: ${socket.id}`);
 

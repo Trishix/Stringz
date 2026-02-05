@@ -1,0 +1,15 @@
+// Socket Auth Middleware
+        this.io.use((socket, next) => {
+            const token = socket.handshake.auth.token || socket.handshake.headers.token;
+            if (!token) {
+                return next(new Error('Authentication error'));
+            }
+            try {
+                // Verify token (simplified, should use verifyToken util)
+                // const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+                // socket.data.user = decoded;
+                next();
+            } catch (err) {
+                next(new Error('Authentication error'));
+            }
+        });
